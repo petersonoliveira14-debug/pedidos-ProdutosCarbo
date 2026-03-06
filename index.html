@@ -3,513 +3,829 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard CarboZé - Fevereiro 2026</title>
+<title>Dashboard CarboZé — Fevereiro 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+:root {
+  --bg:       #062520;
+  --bg2:      #093a30;
+  --card:     #0c4535;
+  --card2:    #0f5240;
+  --border:   rgba(131,206,13,.18);
+  --border2:  rgba(131,206,13,.35);
+  --green:    #83ce0d;
+  --green2:   #a9da00;
+  --green3:   #c8f04a;
+  --txt:      #e8f5ec;
+  --txt2:     #8cc9a0;
+  --txt3:     #4d8c6e;
+  --red:      #ef4444;
+  --amber:    #f59e0b;
+  --blue:     #3b82f6;
+  --white:    #ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;}
 
-  /* Header */
-  .header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 20px 40px; border-bottom: 3px solid #f59e0b; }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .header h1 { font-size: 26px; font-weight: 700; color: #f8fafc; }
-  .header h1 span { color: #f59e0b; }
-  .header .period { font-size: 14px; color: #94a3b8; background: #1e293b; padding: 6px 16px; border-radius: 20px; border: 1px solid #475569; }
+/* ── Header ─────────────────────────── */
+.header{
+  background:var(--bg2);
+  padding:20px 40px 18px;
+  border-bottom:3px solid var(--green);
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.logo-area{display:flex;align-items:center;gap:16px;}
+.logo-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--green);display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:18px;color:#062520;font-family:'Barlow Condensed',sans-serif;
+  letter-spacing:-1px;flex-shrink:0;
+}
+.header h1{font-size:24px;font-weight:800;color:var(--white);letter-spacing:-.3px;}
+.header h1 span{color:var(--green);}
+.period{
+  font-size:12px;font-weight:600;color:var(--txt2);
+  background:rgba(131,206,13,.1);padding:6px 18px;border-radius:20px;
+  border:1px solid var(--border2);letter-spacing:.5px;
+}
+.header-filters{display:flex;flex-wrap:wrap;gap:16px;align-items:center;}
+.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.filter-group label{font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.filter-sep{width:1px;height:28px;background:var(--border);}
+.filter-indicator{font-size:12px;color:var(--txt3);margin-left:4px;}
+.filter-indicator strong{color:var(--txt);}
 
-  /* Global filter in header */
-  .global-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .global-filter label { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .filter-btn { padding: 7px 18px; border-radius: 20px; border: 1.5px solid #475569; background: transparent; color: #94a3b8; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-  .filter-btn:hover { border-color: #cbd5e1; color: #cbd5e1; }
-  .filter-btn.active { background: #f59e0b; color: #0f172a; border-color: #f59e0b; }
-  .filter-btn.f-venda { border-color: #22c55e; color: #22c55e; }
-  .filter-btn.f-venda:hover, .filter-btn.f-venda.active { background: #22c55e; color: #052e16; border-color: #22c55e; }
-  .filter-btn.f-cancel { border-color: #ef4444; color: #ef4444; }
-  .filter-btn.f-cancel:hover, .filter-btn.f-cancel.active { background: #ef4444; color: #fff; border-color: #ef4444; }
-  .filter-btn.f-bonif { border-color: #f59e0b; color: #f59e0b; }
-  .filter-btn.f-bonif:hover, .filter-btn.f-bonif.active { background: #f59e0b; color: #422006; border-color: #f59e0b; }
-  .filter-btn.f-baixa { border-color: #3b82f6; color: #3b82f6; }
-  .filter-btn.f-baixa:hover, .filter-btn.f-baixa.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-  .filter-indicator { font-size: 12px; color: #64748b; margin-left: 8px; }
-  .filter-indicator strong { color: #f59e0b; }
+/* filter buttons */
+.fb{
+  padding:6px 14px;border-radius:20px;border:1.5px solid var(--border2);
+  background:transparent;color:var(--txt2);font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;white-space:nowrap;
+}
+.fb:hover{border-color:var(--green);color:var(--green);}
+.fb.active            {background:rgba(131,206,13,.15);color:var(--white);border-color:var(--green2);}
+.fb.fs-venda.active   {background:var(--green);color:#062520;border-color:var(--green);}
+.fb.fs-cancel.active  {background:var(--red);color:#fff;border-color:var(--red);}
+.fb.fs-bonif.active   {background:var(--amber);color:#422006;border-color:var(--amber);}
+.fb.fs-baixa.active   {background:var(--blue);color:#fff;border-color:var(--blue);}
 
-  .container { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+/* dropdown */
+.vend-select{
+  appearance:none;-webkit-appearance:none;
+  background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2383ce0d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+  border:1.5px solid var(--border2);border-radius:20px;
+  color:var(--txt);font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;
+  cursor:pointer;padding:6px 34px 6px 14px;transition:all .2s;min-width:150px;
+}
+.vend-select:hover{border-color:var(--green);color:var(--green);}
+.vend-select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(131,206,13,.18);}
+.vend-select option{background:#0c4535;color:var(--txt);}
 
-  /* KPI Cards */
-  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 28px; }
-  .kpi-card { background: linear-gradient(135deg, #1e293b, #263348); border-radius: 14px; padding: 22px 24px; border: 1px solid #334155; position: relative; overflow: hidden; transition: all 0.3s; }
-  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-  .kpi-card:nth-child(1)::before { background: #22c55e; }
-  .kpi-card:nth-child(2)::before { background: #10b981; }
-  .kpi-card:nth-child(3)::before { background: #3b82f6; }
-  .kpi-card:nth-child(4)::before { background: #f59e0b; }
-  .kpi-card:nth-child(5)::before { background: #a855f7; }
-  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #94a3b8; margin-bottom: 8px; }
-  .kpi-value { font-size: 28px; font-weight: 800; transition: all 0.3s; }
-  .kpi-card:nth-child(1) .kpi-value { color: #22c55e; }
-  .kpi-card:nth-child(2) .kpi-value { color: #10b981; }
-  .kpi-card:nth-child(3) .kpi-value { color: #3b82f6; }
-  .kpi-card:nth-child(4) .kpi-value { color: #f59e0b; }
-  .kpi-card:nth-child(5) .kpi-value { color: #a855f7; }
-  .kpi-sub { font-size: 11px; color: #64748b; margin-top: 6px; }
-  .kpi-detail { font-size: 11px; color: #ef4444; margin-top: 4px; }
+/* ── Layout ─────────────────────────── */
+.container{max-width:1440px;margin:0 auto;padding:28px 24px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:28px;}
 
-  /* Chart grid */
-  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .chart-card { background: #1e293b; border-radius: 14px; padding: 24px; border: 1px solid #334155; }
-  .chart-card h3 { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
-  .chart-wrap { position: relative; height: 280px; }
+/* ── KPI Cards ────────────────────── */
+.kpi{
+  background:var(--card);border-radius:14px;padding:20px 22px;
+  border:1px solid var(--border);position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi.c1::before{background:var(--green);}
+.kpi.c2::before{background:var(--green2);}
+.kpi.c3::before{background:var(--blue);}
+.kpi.c4::before{background:var(--amber);}
+.kpi.c5::before{background:#10b981;}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.1px;color:var(--txt2);margin-bottom:7px;font-weight:700;}
+.kpi-val{font-size:26px;font-weight:800;font-family:'Barlow Condensed',sans-serif;letter-spacing:-.5px;}
+.kpi.c1 .kpi-val{color:var(--green);}
+.kpi.c2 .kpi-val{color:var(--green2);}
+.kpi.c3 .kpi-val{color:var(--blue);}
+.kpi.c4 .kpi-val{color:var(--amber);}
+.kpi.c5 .kpi-val{color:#10b981;}
+.kpi-sub{font-size:11px;color:var(--txt3);margin-top:5px;}
+.kpi-note{font-size:11px;color:var(--red);margin-top:3px;}
 
-  /* Table */
-  .table-card { background: #1e293b; border-radius: 14px; padding: 24px; border: 1px solid #334155; margin-bottom: 28px; }
-  .table-card h3 { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { background: #0f172a; color: #94a3b8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.8px; padding: 10px 14px; text-align: left; border-bottom: 2px solid #334155; }
-  tbody tr { border-bottom: 1px solid #1e293b; transition: all 0.2s; }
-  tbody tr:hover { background: #263348; }
-  tbody tr.hidden { display: none; }
-  tbody td { padding: 10px 14px; color: #cbd5e1; }
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-  .badge-venda { background: #052e16; color: #4ade80; }
-  .badge-cancel { background: #450a0a; color: #f87171; }
-  .badge-bonif { background: #422006; color: #fbbf24; }
-  .badge-baixa { background: #172554; color: #60a5fa; }
-  .text-right { text-align: right; }
-  .text-green { color: #22c55e; }
-  tfoot td { padding: 12px 14px; font-weight: 700; color: #e2e8f0; border-top: 2px solid #475569; background: #0f172a; }
+/* ── Destaque Card ─────────────────── */
+.destaque-card{
+  background:linear-gradient(135deg,var(--card),#143d2a);
+  border:1px solid var(--border2);border-radius:16px;
+  padding:24px 28px;position:relative;overflow:hidden;margin-bottom:28px;
+  display:flex;gap:36px;align-items:flex-start;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+.destaque-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--green),var(--green2),var(--green3));
+}
+.destaque-left{min-width:300px;}
+.destaque-badge{
+  background:var(--green);color:#062520;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:1px;padding:3px 12px;border-radius:12px;
+  margin-bottom:10px;display:inline-block;font-family:'Barlow',sans-serif;
+}
+.destaque-name{font-size:28px;font-weight:900;color:var(--white);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:-.5px;}
+.destaque-sub{font-size:12px;color:var(--green2);font-weight:600;margin-bottom:18px;}
+.ds-stats{display:flex;gap:28px;flex-wrap:wrap;}
+.ds-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);margin-bottom:3px;font-weight:700;}
+.ds-val{font-size:20px;font-weight:800;color:var(--white);font-family:'Barlow Condensed',sans-serif;}
+.ds-sub{font-size:11px;color:var(--txt3);}
+.destaque-sep{width:1px;background:var(--border);align-self:stretch;}
+.destaque-right{flex:1;}
+.rank-title{font-size:11px;color:var(--txt2);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.rank-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rank-pos{
+  font-size:11px;font-weight:800;color:var(--green);background:rgba(131,206,13,.15);
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.rank-pos.gold{color:#fbbf24;background:rgba(251,191,36,.15);}
+.rank-name{font-size:13px;color:var(--txt);flex:1;min-width:100px;font-weight:600;}
+.rank-bar-w{flex:2;height:6px;background:rgba(131,206,13,.1);border-radius:3px;overflow:hidden;}
+.rank-bar{height:100%;background:var(--green);border-radius:3px;transition:width .4s;}
+.rank-val{font-size:12px;font-weight:700;color:var(--green2);min-width:80px;text-align:right;}
 
-  /* Produto cards */
-  .product-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .product-card { background: linear-gradient(135deg, #1e293b, #1a2744); border-radius: 14px; padding: 22px 24px; border: 1px solid #334155; transition: all 0.3s; }
-  .product-card h4 { font-size: 14px; color: #f59e0b; margin-bottom: 14px; }
-  .product-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #263348; font-size: 13px; }
-  .product-stat:last-child { border-bottom: none; }
-  .product-stat span:first-child { color: #94a3b8; }
-  .product-stat span:last-child { color: #e2e8f0; font-weight: 600; }
-  .product-stat .liq-value { color: #10b981; font-weight: 700; }
-  .product-stat .deduction { color: #ef4444; font-size: 11px; }
+/* ── Produto Cards ─────────────────── */
+.prod-card{
+  background:var(--card);border-radius:14px;padding:22px 24px;
+  border:1px solid var(--border);transition:transform .2s,box-shadow .2s;
+}
+.prod-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.prod-card h4{font-size:13px;color:var(--green);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.ps{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.ps:last-child{border-bottom:none;}
+.ps span:first-child{color:var(--txt2);}
+.ps span:last-child{color:var(--txt);font-weight:600;}
+.liq{color:var(--green2)!important;}
+.ded{color:var(--red)!important;font-size:11px!important;}
 
-  .footer { text-align: center; padding: 20px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; }
+/* ── Bonificação Section ───────────── */
+.bonif-section{margin-bottom:28px;}
+.bonif-section h2{
+  font-size:13px;font-weight:700;color:var(--txt2);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.bonif-section h2::after{content:'';flex:1;height:1px;background:var(--border);}
+.bonif-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.bonif-card{
+  background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);
+  border-radius:12px;padding:18px 20px;
+  border-top:3px solid var(--amber);
+}
+.bonif-vend{font-size:14px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.bonif-cli{font-size:11px;color:var(--txt3);margin-bottom:10px;}
+.bonif-items{}
+.bonif-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,158,11,.1);font-size:12px;}
+.bonif-item:last-child{border-bottom:none;}
+.bonif-item span:first-child{color:var(--txt2);}
+.bonif-item span:last-child{color:var(--amber);font-weight:700;}
+.bonif-tag{
+  display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;padding:2px 8px;border-radius:10px;margin-bottom:8px;
+  background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3);
+}
 
-  @media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 900px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } .charts-row, .product-row { grid-template-columns: 1fr; } }
+/* ── Chart Cards ───────────────────── */
+.chart-card{
+  background:var(--card);border-radius:14px;padding:24px;
+  border:1px solid var(--border);
+}
+.chart-card h3{
+  font-size:13px;font-weight:700;color:var(--txt);margin-bottom:16px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.cw{position:relative;height:270px;}
+.cwt{position:relative;height:320px;}
+
+/* ── Table ─────────────────────────── */
+.table-card{
+  background:var(--card);border-radius:14px;padding:24px;
+  border:1px solid var(--border);margin-bottom:28px;
+}
+.table-card h3{
+  font-size:13px;font-weight:700;color:var(--txt);margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.tbl-sum{font-size:12px;color:var(--txt3);margin-bottom:14px;}
+.tbl-sum strong{color:var(--txt2);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{
+  background:var(--bg2);color:var(--txt3);text-transform:uppercase;
+  font-size:10px;letter-spacing:.8px;padding:10px 12px;text-align:left;
+  border-bottom:2px solid var(--border);font-weight:700;
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:hover{background:var(--card2);}
+tbody td{padding:9px 12px;color:var(--txt);}
+tfoot td{
+  padding:11px 12px;font-weight:700;color:var(--green);
+  border-top:2px solid var(--border2);background:var(--bg2);
+}
+.tr{text-align:right;}
+.badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;}
+.bv{background:rgba(131,206,13,.12);color:var(--green);}
+.bc{background:rgba(239,68,68,.12);color:#f87171;}
+.bb{background:rgba(245,158,11,.12);color:#fbbf24;}
+.bx{background:rgba(59,130,246,.12);color:#60a5fa;}
+.vtag{font-size:11px;color:var(--txt3);font-weight:600;}
+
+/* ── Footer ─────────────────────────── */
+.footer{
+  text-align:center;padding:24px;color:var(--txt3);font-size:12px;
+  border-top:1px solid var(--border);margin-top:8px;
+}
+.footer strong{color:var(--green);}
+
+/* ── Section title ──────────────────── */
+.section-title{
+  font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Responsive */
+@media(max-width:1100px){.g5{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:800px){
+  .g5,.g2,.g3{grid-template-columns:1fr;}
+  .destaque-card{flex-direction:column;}
+  .destaque-left{min-width:auto;}
+  .header{padding:16px 20px 14px;}
+}
 </style>
 </head>
 <body>
 
+<!-- ══════════ HEADER ══════════ -->
 <div class="header">
   <div class="header-top">
-    <h1><span>CarboZé</span> &mdash; Dashboard Financeiro</h1>
+    <div class="logo-area">
+      <div class="logo-icon">CZ</div>
+      <h1><span>CarboZé</span> &mdash; Dashboard Financeiro</h1>
+    </div>
     <div class="period">Fevereiro 2026</div>
   </div>
-  <div class="global-filter">
-    <label>Filtrar Status:</label>
-    <button class="filter-btn active" onclick="applyFilter('todos', this)">Todos</button>
-    <button class="filter-btn f-venda" onclick="applyFilter('venda', this)">Venda</button>
-    <button class="filter-btn f-cancel" onclick="applyFilter('cancelada', this)">Cancelada</button>
-    <button class="filter-btn f-bonif" onclick="applyFilter('bonificacao', this)">Bonificação</button>
-    <button class="filter-btn f-baixa" onclick="applyFilter('baixa', this)">Baixa Estoque</button>
-    <span class="filter-indicator" id="filterIndicator">Mostrando <strong>22 notas</strong></span>
+  <div class="header-filters">
+    <div class="filter-group">
+      <label>Status:</label>
+      <button class="fb active"     onclick="setF('status','todos',this)">Todos</button>
+      <button class="fb fs-venda"   onclick="setF('status','venda',this)">Venda</button>
+      <button class="fb fs-cancel"  onclick="setF('status','cancelada',this)">Cancelada</button>
+      <button class="fb fs-bonif"   onclick="setF('status','bonificacao',this)">Bonificação</button>
+      <button class="fb fs-baixa"   onclick="setF('status','baixa',this)">Baixa Estoque</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <label>Vendedor:</label>
+      <select class="vend-select" id="vSelect" onchange="setVendedor(this)">
+        <option value="todos">Todos os vendedores</option>
+      </select>
+    </div>
+    <div class="filter-sep"></div>
+    <span class="filter-indicator" id="fInfo">Mostrando <strong>22 notas</strong></span>
   </div>
 </div>
 
 <div class="container">
 
   <!-- KPIs -->
-  <div class="kpi-row">
-    <div class="kpi-card">
-      <div class="kpi-label">Faturamento Bruto</div>
-      <div class="kpi-value" id="kpiBruto">R$ 37.957</div>
-      <div class="kpi-sub" id="kpiBrutoSub">Todas as notas emitidas (22)</div>
+  <div class="g5">
+    <div class="kpi c1"><div class="kpi-lbl">Faturamento Bruto</div><div class="kpi-val" id="kB">—</div><div class="kpi-sub" id="kBs"></div></div>
+    <div class="kpi c2"><div class="kpi-lbl">Faturamento Líquido</div><div class="kpi-val" id="kL">—</div><div class="kpi-sub" id="kLs"></div><div class="kpi-note" id="kLn"></div></div>
+    <div class="kpi c3"><div class="kpi-lbl">Total de Notas</div><div class="kpi-val" id="kN">—</div><div class="kpi-sub" id="kNs"></div></div>
+    <div class="kpi c4"><div class="kpi-lbl">Ticket Médio (Vendas)</div><div class="kpi-val" id="kT">—</div><div class="kpi-sub" id="kTs"></div></div>
+    <div class="kpi c5"><div class="kpi-lbl">Clientes Únicos</div><div class="kpi-val" id="kC">—</div><div class="kpi-sub" id="kCs"></div></div>
+  </div>
+
+  <!-- Destaque Vendedor -->
+  <div class="destaque-card">
+    <div class="destaque-left">
+      <div class="destaque-badge">🏆 Destaque do Mês</div>
+      <div class="destaque-name" id="dName">—</div>
+      <div class="destaque-sub">Maior faturamento líquido (Vendas)</div>
+      <div class="ds-stats">
+        <div class="ds-s"><div class="ds-lbl">Unidades Vendidas</div><div class="ds-val" id="dQtd">—</div><div class="ds-sub">Status "Venda"</div></div>
+        <div class="ds-s"><div class="ds-lbl">Fat. Bruto</div><div class="ds-val" id="dBruto">—</div><div class="ds-sub">Todas as NFs</div></div>
+        <div class="ds-s"><div class="ds-lbl">Fat. Líquido</div><div class="ds-val" id="dLiq">—</div><div class="ds-sub">Somente Vendas</div></div>
+        <div class="ds-s"><div class="ds-lbl">NFs de Venda</div><div class="ds-val" id="dNF">—</div><div class="ds-sub">notas emitidas</div></div>
+      </div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Faturamento Líquido</div>
-      <div class="kpi-value" id="kpiLiquido">R$ 27.291</div>
-      <div class="kpi-sub" id="kpiLiquidoSub">Somente notas de Venda (19)</div>
-      <div class="kpi-detail" id="kpiLiquidoDetail">(-) R$ 9.750 cancel. · R$ 672 bonif. · R$ 244 baixa</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label" id="kpiNotasLabel">Total de Notas Fiscais</div>
-      <div class="kpi-value" id="kpiNotas">22</div>
-      <div class="kpi-sub" id="kpiNotasSub">19 vendas · 1 cancelada · 1 bonif. · 1 baixa</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Ticket Médio (Vendas)</div>
-      <div class="kpi-value" id="kpiTicket">R$ 1.436</div>
-      <div class="kpi-sub" id="kpiTicketSub">R$ 27.291 ÷ 19 notas de venda</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Clientes Únicos</div>
-      <div class="kpi-value" id="kpiClientes">19</div>
-      <div class="kpi-sub" id="kpiClientesSub">Clientes atendidos no mês</div>
+    <div class="destaque-sep"></div>
+    <div class="destaque-right">
+      <div class="rank-title">Ranking — Faturamento Líquido por Vendedor</div>
+      <div id="rankList"></div>
     </div>
   </div>
 
-  <!-- Produto resumo -->
-  <div class="product-row">
-    <div class="product-card" id="card100ml">
+  <!-- Produto Cards -->
+  <div class="section-title">Produtos</div>
+  <div class="g2">
+    <div class="prod-card">
       <h4>CarboZé Estabilizador 100ML</h4>
-      <div class="product-stat"><span>Unidades Saída</span><span id="p100qtd">2.815 un</span></div>
-      <div class="product-stat"><span>Faturamento Bruto</span><span id="p100bruto">R$ 36.349</span></div>
-      <div class="product-stat"><span>Faturamento Líquido</span><span id="p100liq" class="liq-value">R$ 26.355</span></div>
-      <div class="product-stat"><span>Deduções</span><span id="p100ded" class="deduction">-R$ 9.994 (cancel. + baixa)</span></div>
-      <div class="product-stat"><span>Preço Médio</span><span id="p100preco">R$ 12,91</span></div>
-      <div class="product-stat"><span>Nº de Saídas</span><span id="p100saidas">19</span></div>
+      <div class="ps"><span>Unidades Saída</span><span id="p100qtd">—</span></div>
+      <div class="ps"><span>Faturamento Bruto</span><span id="p100bruto">—</span></div>
+      <div class="ps"><span>Faturamento Líquido</span><span id="p100liq" class="liq">—</span></div>
+      <div class="ps"><span>Deduções</span><span id="p100ded" class="ded">—</span></div>
+      <div class="ps"><span>Preço Médio (Venda)</span><span id="p100preco">—</span></div>
+      <div class="ps"><span>Nº de Saídas</span><span id="p100saidas">—</span></div>
     </div>
-    <div class="product-card" id="card1l">
+    <div class="prod-card">
       <h4>CarboZé Estabilizador 1L</h4>
-      <div class="product-stat"><span>Unidades Saída</span><span id="p1lqtd">84 un</span></div>
-      <div class="product-stat"><span>Faturamento Bruto</span><span id="p1lbruto">R$ 9.408</span></div>
-      <div class="product-stat"><span>Faturamento Líquido</span><span id="p1lliq" class="liq-value">R$ 8.736</span></div>
-      <div class="product-stat"><span>Deduções</span><span id="p1lded" class="deduction">-R$ 672 (bonif.)</span></div>
-      <div class="product-stat"><span>Preço Unitário</span><span id="p1lpreco">R$ 112,00</span></div>
-      <div class="product-stat"><span>Nº de Saídas</span><span id="p1lsaidas">4</span></div>
+      <div class="ps"><span>Unidades Saída</span><span id="p1lqtd">—</span></div>
+      <div class="ps"><span>Faturamento Bruto</span><span id="p1lbruto">—</span></div>
+      <div class="ps"><span>Faturamento Líquido</span><span id="p1lliq" class="liq">—</span></div>
+      <div class="ps"><span>Deduções</span><span id="p1lded" class="ded">—</span></div>
+      <div class="ps"><span>Preço Unitário</span><span id="p1lpreco">—</span></div>
+      <div class="ps"><span>Nº de Saídas</span><span id="p1lsaidas">—</span></div>
     </div>
   </div>
 
-  <!-- Charts Row 1 -->
-  <div class="charts-row">
-    <div class="chart-card">
-      <h3>Evolução Semanal de Faturamento</h3>
-      <div class="chart-wrap"><canvas id="chartSemanal"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Faturamento por Produto</h3>
-      <div class="chart-wrap"><canvas id="chartProduto"></canvas></div>
+  <!-- Bonificações por Vendedor -->
+  <div class="bonif-section">
+    <div class="section-title">Bonificações por Vendedor</div>
+    <div class="bonif-cards">
+
+      <div class="bonif-card">
+        <div class="bonif-tag">Bonificação</div>
+        <div class="bonif-vend">Rodrigo Torquato</div>
+        <div class="bonif-cli">Fênix Combustíveis e Serviços &mdash; NF 165</div>
+        <div class="bonif-items">
+          <div class="bonif-item"><span>Produto</span><span>CarboZé 100ML</span></div>
+          <div class="bonif-item"><span>Unidades Bonificadas</span><span>5 unidades</span></div>
+          <div class="bonif-item"><span>Valor (R$)</span><span>R$ 65</span></div>
+        </div>
+      </div>
+
+      <div class="bonif-card">
+        <div class="bonif-tag">Bonificação</div>
+        <div class="bonif-vend">Thelis</div>
+        <div class="bonif-cli">JMG Serviços &mdash; NF 176</div>
+        <div class="bonif-items">
+          <div class="bonif-item"><span>Produto</span><span>CarboZé 1L</span></div>
+          <div class="bonif-item"><span>Unidades Bonificadas</span><span>6 unidades</span></div>
+          <div class="bonif-item"><span>Valor (R$)</span><span>R$ 672</span></div>
+        </div>
+      </div>
+
+      <div class="bonif-card" style="background:rgba(131,206,13,.04);border-color:rgba(131,206,13,.2);border-top-color:var(--green2);">
+        <div class="bonif-tag" style="background:rgba(131,206,13,.1);color:var(--green2);border-color:rgba(131,206,13,.25);">Total Bonificações</div>
+        <div class="bonif-vend" style="color:var(--green2);">Resumo Geral</div>
+        <div class="bonif-cli">Fevereiro 2026</div>
+        <div class="bonif-items">
+          <div class="bonif-item"><span>Total de NFs Bonificadas</span><span style="color:var(--green2);">2 notas</span></div>
+          <div class="bonif-item"><span>Unidades 100ML</span><span style="color:var(--green2);">5 unidades</span></div>
+          <div class="bonif-item"><span>Unidades 1L</span><span style="color:var(--green2);">6 unidades</span></div>
+          <div class="bonif-item"><span>Valor Total</span><span style="color:var(--green2);">R$ 737</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Charts Row 2 -->
-  <div class="charts-row">
-    <div class="chart-card">
-      <h3>Top 10 Clientes por Faturamento (R$)</h3>
-      <div class="chart-wrap" style="height:320px"><canvas id="chartClientes"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Distribuição por Tipo de Nota</h3>
-      <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
-    </div>
+  <!-- Charts 1: Semanal + Produto -->
+  <div class="section-title">Análise de Faturamento</div>
+  <div class="g2">
+    <div class="chart-card"><h3>Evolução Semanal de Faturamento</h3><div class="cw"><canvas id="cSem"></canvas></div></div>
+    <div class="chart-card"><h3>Faturamento por Produto</h3><div class="cw"><canvas id="cProd"></canvas></div></div>
   </div>
 
-  <!-- Charts Row 3 -->
-  <div class="charts-row">
-    <div class="chart-card">
-      <h3>Ticket Médio por Cliente (Top 10 — somente Vendas)</h3>
-      <div class="chart-wrap" style="height:320px"><canvas id="chartTicket"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Volume de Saídas - CarboZé 100ML (por data)</h3>
-      <div class="chart-wrap"><canvas id="chartVolume100"></canvas></div>
-    </div>
+  <!-- Chart 2: Vendedor full width -->
+  <div style="margin-bottom:28px;">
+    <div class="chart-card"><h3>Faturamento Líquido por Vendedor (somente Vendas)</h3><div class="cw"><canvas id="cVend"></canvas></div></div>
   </div>
 
-  <!-- Tabela -->
+  <!-- Charts 3: Clientes + Status -->
+  <div class="g2">
+    <div class="chart-card"><h3>Top Clientes por Faturamento (R$)</h3><div class="cwt"><canvas id="cCli"></canvas></div></div>
+    <div class="chart-card"><h3>Distribuição por Tipo de Nota</h3><div class="cw"><canvas id="cStat"></canvas></div></div>
+  </div>
+
+  <!-- Charts 4: Ticket + Volume -->
+  <div class="g2">
+    <div class="chart-card"><h3>Ticket Médio por Cliente (somente Vendas)</h3><div class="cwt"><canvas id="cTick"></canvas></div></div>
+    <div class="chart-card"><h3>Volume de Saídas — CarboZé 100ML (por data)</h3><div class="cw"><canvas id="cVol"></canvas></div></div>
+  </div>
+
+  <!-- Table -->
   <div class="table-card">
     <h3>Detalhamento das Notas Fiscais</h3>
+    <div class="tbl-sum" id="tSum"></div>
     <table>
-      <thead>
-        <tr><th>NF</th><th>Data</th><th>Cliente</th><th>Tipo</th><th>Status</th><th class="text-right">Valor (R$)</th></tr>
-      </thead>
-      <tbody id="nfTableBody"></tbody>
-      <tfoot>
-        <tr><td colspan="5">TOTAL FILTRADO</td><td class="text-right" id="footerTotal">R$ 37.957</td></tr>
-      </tfoot>
+      <thead><tr><th>NF</th><th>Data</th><th>Cliente</th><th>Vendedor</th><th>Status</th><th class="tr">Valor (R$)</th></tr></thead>
+      <tbody id="tBody"></tbody>
+      <tfoot><tr><td colspan="5">TOTAL FILTRADO</td><td class="tr" id="tTotal">—</td></tr></tfoot>
     </table>
   </div>
 
-  <div class="footer">Dashboard gerado automaticamente &mdash; CarboZé &middot; CARBO SOLUÇÕES LTDA &middot; Fevereiro 2026</div>
+  <div class="footer">
+    Dashboard gerado automaticamente &mdash; <strong>CarboZé</strong> &middot; CARBO SOLUÇÕES LTDA &middot; Fevereiro 2026
+  </div>
 </div>
 
 <script>
-Chart.defaults.color = '#94a3b8';
-Chart.defaults.borderColor = '#334155';
-Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+Chart.defaults.color = '#8cc9a0';
+Chart.defaults.borderColor = 'rgba(131,206,13,.12)';
+Chart.defaults.font.family = "'Barlow', sans-serif";
 
-/* ==================== DATA ==================== */
+/* ═══════════════ DATA ═══════════════ */
 const NOTAS = [
-  { nf:152, data:'02/02', semana:1, cliente:'Flor Comércio de Combustíveis', clienteFull:'FLOR COMERCIO DE COMBUSTIVEIS LTDA', status:'venda', valor:1300, produto:'100ml', qtd:100 },
-  { nf:153, data:'02/02', semana:1, cliente:'Flor Real Serviços', clienteFull:'FLOR REAL SERVICOS LTDA', status:'venda', valor:650, produto:'100ml', qtd:50 },
-  { nf:154, data:'02/02', semana:1, cliente:'Nordeste Rolamentos', clienteFull:'NORDESTE ROLAMENTOS LTDA', status:'venda', valor:1950, produto:'100ml', qtd:150 },
-  { nf:155, data:'03/02', semana:1, cliente:'B de L Costa', clienteFull:'B DE L COSTA LTDA', status:'venda', valor:1950, produto:'100ml', qtd:150 },
-  { nf:156, data:'05/02', semana:1, cliente:'AMG Personal Garage', clienteFull:'AMG PERSONAL GARAGE LTDA', status:'venda', valor:1950, produto:'100ml', qtd:150 },
-  { nf:158, data:'06/02', semana:1, cliente:'Carpower Serviços Automotivos', clienteFull:'CARPOWER SERVICOS AUTOMOTIVOS LTDA', status:'venda', valor:1820, produto:'100ml', qtd:140 },
-  { nf:159, data:'09/02', semana:2, cliente:'Deisi Cristina Scherer', clienteFull:'Deisi Cristina Scherer', status:'venda', valor:250, produto:'100ml', qtd:10 },
-  { nf:160, data:'10/02', semana:2, cliente:'Carbo Soluções', clienteFull:'CARBO SOLUÇÕES LTDA', status:'baixa', valor:244, produto:'100ml', qtd:40 },
-  { nf:161, data:'10/02', semana:2, cliente:'M Construções & Serviços', clienteFull:'M CONSTRUÇÕES & SERVIÇOS LTDA', status:'venda', valor:2240, produto:'1l', qtd:20 },
-  { nf:162, data:'10/02', semana:2, cliente:'M Construções & Serviços', clienteFull:'M CONSTRUÇÕES & SERVIÇOS LTDA', status:'venda', valor:4480, produto:'1l', qtd:40 },
-  { nf:163, data:'12/02', semana:2, cliente:'Fênix Combustíveis e Serviços', clienteFull:'FENIX COMBUSTÍVEIS E SERVIÇOS LTDA', status:'venda', valor:975, produto:'100ml', qtd:75 },
-  { nf:165, data:'12/02', semana:2, cliente:'Fênix Combustíveis e Serviços', clienteFull:'FENIX COMBUSTÍVEIS E SERVIÇOS LTDA', status:'venda', valor:65, produto:'100ml', qtd:5 },
-  { nf:167, data:'19/02', semana:3, cliente:'Garagem 57 Peças Automotivas', clienteFull:'GARAGEM 57 PECAS AUTOMOTIVAS LTDA', status:'cancelada', valor:9750, produto:'100ml', qtd:750 },
-  { nf:169, data:'20/02', semana:3, cliente:'Auto Mecânica Gueths', clienteFull:'AUTO MECANICA GUETHS LTDA', status:'venda', valor:975, produto:'100ml', qtd:75 },
-  { nf:170, data:'20/02', semana:3, cliente:'Bravo Caminhões e Empreendimentos', clienteFull:'BRAVO CAMINHOES E EMPREENDIMENTOS', status:'venda', valor:975, produto:'100ml', qtd:75 },
-  { nf:171, data:'20/02', semana:3, cliente:'Gutemberg Braga David', clienteFull:'Gutemberg Braga David', status:'venda', valor:300, produto:'100ml', qtd:30 },
-  { nf:172, data:'20/02', semana:3, cliente:'Carlos Eduardo Vagner', clienteFull:'CARLOS EDUARDO VAGNER', status:'venda', valor:975, produto:'100ml', qtd:75 },
-  { nf:173, data:'23/02', semana:4, cliente:'Via Diesel Distribuidora', clienteFull:'VIA DIESEL DISTRIBUIDORA DE VEICULOS MOTORES E PECAS LTDA', status:'venda', valor:1950, produto:'100ml', qtd:150 },
-  { nf:174, data:'23/02', semana:4, cliente:'Alan Dirley de Queiroz Pessoa', clienteFull:'ALAN DIRLEY DE QUEIROZ PESSOA LTDA', status:'venda', valor:1950, produto:'100ml', qtd:150 },
-  { nf:175, data:'26/02', semana:4, cliente:'JMG Serviços', clienteFull:'JMG SERVICOS LTDA', status:'venda', valor:2016, produto:'1l', qtd:18 },
-  { nf:176, data:'26/02', semana:4, cliente:'JMG Serviços', clienteFull:'JMG SERVICOS LTDA', status:'bonificacao', valor:672, produto:'1l', qtd:6 },
-  { nf:177, data:'26/02', semana:4, cliente:'Próspera Geradores e Serviços', clienteFull:'PROSPERA GERADORES E SERVICOS LTDA', status:'venda', valor:520, produto:'100ml', qtd:40 }
+  {nf:152,data:'02/02',sem:1,cliente:'Flor Comércio de Combustíveis',   status:'venda',      valor:1300,produto:'100ml',qtd:100, vendedor:'Márcio Vannucci'},
+  {nf:153,data:'02/02',sem:1,cliente:'Flor Real Serviços',              status:'venda',      valor:650, produto:'100ml',qtd:50,  vendedor:'Márcio Vannucci'},
+  {nf:154,data:'02/02',sem:1,cliente:'Nordeste Rolamentos',             status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Rodrigo Torquato'},
+  {nf:155,data:'03/02',sem:1,cliente:'B de L Costa',                   status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Rodrigo Torquato'},
+  {nf:156,data:'05/02',sem:1,cliente:'AMG Personal Garage',            status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Erick'},
+  {nf:158,data:'06/02',sem:1,cliente:'Carpower Serviços Automotivos',  status:'venda',      valor:1820,produto:'100ml',qtd:140, vendedor:'Thelis'},
+  {nf:159,data:'09/02',sem:2,cliente:'Deisi Cristina Scherer',         status:'venda',      valor:250, produto:'100ml',qtd:10,  vendedor:'Lígia'},
+  {nf:160,data:'10/02',sem:2,cliente:'Carbo Soluções',                 status:'baixa',      valor:244, produto:'100ml',qtd:40,  vendedor:null},
+  {nf:161,data:'10/02',sem:2,cliente:'M Construções & Serviços',       status:'venda',      valor:2240,produto:'1l',   qtd:20,  vendedor:'Thelis'},
+  {nf:162,data:'10/02',sem:2,cliente:'M Construções & Serviços',       status:'venda',      valor:4480,produto:'1l',   qtd:40,  vendedor:'Thelis'},
+  {nf:163,data:'12/02',sem:2,cliente:'Fênix Combustíveis e Serviços',  status:'venda',      valor:975, produto:'100ml',qtd:75,  vendedor:'Rodrigo Torquato'},
+  {nf:165,data:'12/02',sem:2,cliente:'Fênix Combustíveis e Serviços',  status:'bonificacao',valor:65,  produto:'100ml',qtd:5,   vendedor:'Rodrigo Torquato'},
+  {nf:167,data:'19/02',sem:3,cliente:'Garagem 57 Peças Automotivas',   status:'cancelada',  valor:9750,produto:'100ml',qtd:750, vendedor:'Erick'},
+  {nf:169,data:'20/02',sem:3,cliente:'Auto Mecânica Gueths',           status:'venda',      valor:975, produto:'100ml',qtd:75,  vendedor:'França'},
+  {nf:170,data:'20/02',sem:3,cliente:'Bravo Caminhões e Empreendimentos',status:'venda',    valor:975, produto:'100ml',qtd:75,  vendedor:'Thiago'},
+  {nf:171,data:'20/02',sem:3,cliente:'Gutemberg Braga David',          status:'venda',      valor:300, produto:'100ml',qtd:30,  vendedor:'Thelis'},
+  {nf:172,data:'20/02',sem:3,cliente:'Carlos Eduardo Vagner',          status:'venda',      valor:975, produto:'100ml',qtd:75,  vendedor:'Ivo'},
+  {nf:173,data:'23/02',sem:4,cliente:'Via Diesel Distribuidora',       status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Márcio Vannucci'},
+  {nf:174,data:'23/02',sem:4,cliente:'Alan Dirley de Queiroz Pessoa',  status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Rodrigo Torquato'},
+  {nf:175,data:'26/02',sem:4,cliente:'JMG Serviços',                   status:'venda',      valor:2016,produto:'1l',   qtd:18,  vendedor:'Thelis'},
+  {nf:176,data:'26/02',sem:4,cliente:'JMG Serviços',                   status:'bonificacao',valor:672, produto:'1l',   qtd:6,   vendedor:'Thelis'},
+  {nf:177,data:'26/02',sem:4,cliente:'Próspera Geradores e Serviços',  status:'venda',      valor:520, produto:'100ml',qtd:40,  vendedor:'Márcio Vannucci'},
 ];
 
-const STATUS_MAP = { venda:'Venda', cancelada:'Cancelada', bonificacao:'Bonificação', baixa:'Baixa Estoque' };
-const BADGE_MAP = { venda:'badge-venda', cancelada:'badge-cancel', bonificacao:'badge-bonif', baixa:'badge-baixa' };
-const SEMANA_LABELS = ['Sem 1 (02-08/02)','Sem 2 (09-15/02)','Sem 3 (16-22/02)','Sem 4 (23-28/02)'];
-const DATAS_100ML = ['02/02','03/02','05/02','06/02','09/02','10/02','12/02','19/02','20/02','23/02','26/02'];
+const SL = {venda:'Venda',cancelada:'Cancelada',bonificacao:'Bonificação',baixa:'Baixa Estoque'};
+const BC = {venda:'bv',cancelada:'bc',bonificacao:'bb',baixa:'bx'};
+const SEMS = ['Sem 1 (02–08/02)','Sem 2 (09–15/02)','Sem 3 (16–22/02)','Sem 4 (23–28/02)'];
 
-let currentFilter = 'todos';
-let charts = {};
+const G   = '#83ce0d';
+const G2  = '#a9da00';
+const RED = '#ef4444';
+const AMB = '#f59e0b';
+const BLU = '#3b82f6';
+const TQ  = '#14b8a6';
 
-/* ==================== HELPERS ==================== */
-function fmt(v) { return v.toLocaleString('pt-BR'); }
-function fmtR(v) { return 'R$ ' + fmt(v); }
+const VCOLS = [G,'#4ade80',G2,'#22d3ee','#c084fc','#fb923c','#f472b6','#67e8f9','#86efac','#fde68a','#a5b4fc'];
 
-function filtered(filter) {
-  if (filter === 'todos') return NOTAS;
-  return NOTAS.filter(n => n.status === filter);
-}
+const ALL_VENDS = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
+let F = {status:'todos', vendedor:'todos'};
+let CH = {};
 
-/* ==================== BUILD TABLE ==================== */
-function buildTable(data) {
-  const tbody = document.getElementById('nfTableBody');
-  tbody.innerHTML = '';
-  let total = 0;
-  data.forEach(n => {
-    total += n.valor;
-    const tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td>'+n.nf+'</td><td>'+n.data+'</td><td>'+n.cliente+'</td><td>Saída</td>' +
-      '<td><span class="badge '+BADGE_MAP[n.status]+'">'+STATUS_MAP[n.status]+'</span></td>' +
-      '<td class="text-right">'+fmt(n.valor)+'</td>';
-    tbody.appendChild(tr);
+/* ═══════════════ HELPERS ═══════════════ */
+const g    = id => document.getElementById(id);
+const fmt  = v  => Math.round(v).toLocaleString('pt-BR');
+const fmtR = v  => 'R$ ' + fmt(v);
+const getData = () => NOTAS.filter(n => {
+  const os = F.status   === 'todos' || n.status   === F.status;
+  const ov = F.vendedor === 'todos' || n.vendedor === F.vendedor;
+  return os && ov;
+});
+
+/* ═══════════════ DROPDOWN ═══════════════ */
+function buildVSelect() {
+  const sel = g('vSelect');
+  ALL_VENDS.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    sel.appendChild(opt);
   });
-  document.getElementById('footerTotal').textContent = fmtR(total);
 }
 
-/* ==================== UPDATE KPIs ==================== */
-function updateKPIs(data) {
-  const totalBruto = data.reduce((s,n) => s+n.valor, 0);
-  const vendas = data.filter(n => n.status === 'venda');
-  const totalLiq = vendas.reduce((s,n) => s+n.valor, 0);
-  const nVendas = vendas.length;
-  const clientes = new Set(data.map(n => n.cliente)).size;
-  const clientesVenda = new Set(vendas.map(n => n.cliente)).size;
-
-  const cancelVal = data.filter(n=>n.status==='cancelada').reduce((s,n)=>s+n.valor,0);
-  const bonifVal = data.filter(n=>n.status==='bonificacao').reduce((s,n)=>s+n.valor,0);
-  const baixaVal = data.filter(n=>n.status==='baixa').reduce((s,n)=>s+n.valor,0);
-
-  document.getElementById('kpiBruto').textContent = fmtR(totalBruto);
-  document.getElementById('kpiBrutoSub').textContent = 'Todas as notas filtradas ('+data.length+')';
-
-  document.getElementById('kpiLiquido').textContent = fmtR(totalLiq);
-  document.getElementById('kpiLiquidoSub').textContent = 'Somente notas de Venda ('+nVendas+')';
-
-  let detParts = [];
-  if (cancelVal > 0) detParts.push('R$ '+fmt(cancelVal)+' cancel.');
-  if (bonifVal > 0) detParts.push('R$ '+fmt(bonifVal)+' bonif.');
-  if (baixaVal > 0) detParts.push('R$ '+fmt(baixaVal)+' baixa');
-  document.getElementById('kpiLiquidoDetail').textContent = detParts.length ? '(-) ' + detParts.join(' · ') : '';
-
-  document.getElementById('kpiNotas').textContent = data.length;
-  const counts = {};
-  data.forEach(n => { counts[n.status] = (counts[n.status]||0)+1; });
-  let subParts = [];
-  if (counts.venda) subParts.push(counts.venda+' vendas');
-  if (counts.cancelada) subParts.push(counts.cancelada+' cancelada');
-  if (counts.bonificacao) subParts.push(counts.bonificacao+' bonif.');
-  if (counts.baixa) subParts.push(counts.baixa+' baixa');
-  document.getElementById('kpiNotasSub').textContent = subParts.join(' · ') || 'Nenhuma nota';
-
-  const ticketMedio = nVendas > 0 ? Math.round(totalLiq / nVendas) : 0;
-  document.getElementById('kpiTicket').textContent = fmtR(ticketMedio);
-  document.getElementById('kpiTicketSub').textContent = nVendas > 0 ? fmtR(totalLiq)+' ÷ '+nVendas+' notas de venda' : 'Sem vendas no filtro';
-
-  document.getElementById('kpiClientes').textContent = clientes;
-  document.getElementById('kpiClientesSub').textContent = 'Clientes no filtro atual';
+function setVendedor(sel) {
+  F.vendedor = sel.value;
+  sel.style.borderColor = sel.value === 'todos' ? 'rgba(131,206,13,.35)' : G;
+  sel.style.color       = sel.value === 'todos' ? ''                     : G;
+  refresh();
 }
 
-/* ==================== UPDATE PRODUCT CARDS ==================== */
-function updateProductCards(data) {
-  const d100 = data.filter(n => n.produto === '100ml');
-  const d1l = data.filter(n => n.produto === '1l');
-
-  // 100ML
-  const q100 = d100.reduce((s,n)=>s+n.qtd,0);
-  const b100 = d100.reduce((s,n)=>s+n.valor,0);
-  const v100 = d100.filter(n=>n.status==='venda');
-  const l100 = v100.reduce((s,n)=>s+n.valor,0);
-  const ded100 = b100 - l100;
-  document.getElementById('p100qtd').textContent = fmt(q100)+' un';
-  document.getElementById('p100bruto').textContent = fmtR(b100);
-  document.getElementById('p100liq').textContent = fmtR(l100);
-  const ded100parts = [];
-  const c100 = d100.filter(n=>n.status==='cancelada').reduce((s,n)=>s+n.valor,0);
-  const x100 = d100.filter(n=>n.status==='baixa').reduce((s,n)=>s+n.valor,0);
-  const bf100 = d100.filter(n=>n.status==='bonificacao').reduce((s,n)=>s+n.valor,0);
-  if (c100) ded100parts.push('cancel.');
-  if (x100) ded100parts.push('baixa');
-  if (bf100) ded100parts.push('bonif.');
-  document.getElementById('p100ded').textContent = ded100 > 0 ? '-'+fmtR(ded100)+' ('+ded100parts.join(' + ')+')' : 'Sem deduções';
-  document.getElementById('p100preco').textContent = q100 > 0 ? 'R$ '+(b100/q100).toFixed(2).replace('.',',') : '-';
-  document.getElementById('p100saidas').textContent = d100.length;
-
-  // 1L
-  const q1l = d1l.reduce((s,n)=>s+n.qtd,0);
-  const b1l = d1l.reduce((s,n)=>s+n.valor,0);
-  const v1l = d1l.filter(n=>n.status==='venda');
-  const l1l = v1l.reduce((s,n)=>s+n.valor,0);
-  const ded1l = b1l - l1l;
-  document.getElementById('p1lqtd').textContent = fmt(q1l)+' un';
-  document.getElementById('p1lbruto').textContent = fmtR(b1l);
-  document.getElementById('p1lliq').textContent = fmtR(l1l);
-  const ded1lparts = [];
-  if (d1l.filter(n=>n.status==='cancelada').reduce((s,n)=>s+n.valor,0)) ded1lparts.push('cancel.');
-  if (d1l.filter(n=>n.status==='baixa').reduce((s,n)=>s+n.valor,0)) ded1lparts.push('baixa');
-  if (d1l.filter(n=>n.status==='bonificacao').reduce((s,n)=>s+n.valor,0)) ded1lparts.push('bonif.');
-  document.getElementById('p1lded').textContent = ded1l > 0 ? '-'+fmtR(ded1l)+' ('+ded1lparts.join(' + ')+')' : 'Sem deduções';
-  document.getElementById('p1lpreco').textContent = q1l > 0 ? 'R$ '+(b1l/q1l).toFixed(2).replace('.',',') : '-';
-  document.getElementById('p1lsaidas').textContent = d1l.length;
-}
-
-/* ==================== CHART BUILDERS ==================== */
-function destroyAll() {
-  Object.values(charts).forEach(c => c.destroy());
-  charts = {};
-}
-
-function buildCharts(data) {
-  destroyAll();
-
-  // 1. Semanal
-  const semanalData = [0,0,0,0];
-  data.forEach(n => { semanalData[n.semana-1] += n.valor; });
-  charts.semanal = new Chart(document.getElementById('chartSemanal'), {
-    type:'bar',
-    data:{ labels: SEMANA_LABELS, datasets:[{
-      label:'Faturamento (R$)', data: semanalData,
-      backgroundColor:['#22c55e88','#3b82f688','#f59e0b88','#a855f788'],
-      borderColor:['#22c55e','#3b82f6','#f59e0b','#a855f7'],
-      borderWidth:2, borderRadius:8
-    }]},
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}} },
-      scales:{ y:{beginAtZero:true,ticks:{callback:v=>'R$ '+(v/1000).toFixed(0)+'k'},grid:{color:'#1e293b'}}, x:{grid:{display:false}} }
+/* ═══════════════ FILTER BUTTONS ═══════════════ */
+function setF(key, val, btn) {
+  F[key] = val;
+  document.querySelectorAll('.fb').forEach(b => {
+    if (b.classList.contains('fs-venda')||b.classList.contains('fs-cancel')||
+        b.classList.contains('fs-bonif')||b.classList.contains('fs-baixa')||
+        (!b.classList.length || b.textContent==='Todos')) {
+      b.classList.remove('active');
     }
   });
+  document.querySelectorAll('.fb').forEach(b => {
+    if (b.onclick && b.onclick.toString().includes(`'${val}'`)) b.classList.add('active');
+  });
+  refresh();
+}
 
-  // 2. Produto donut
-  const fat100 = data.filter(n=>n.produto==='100ml').reduce((s,n)=>s+n.valor,0);
-  const fat1l = data.filter(n=>n.produto==='1l').reduce((s,n)=>s+n.valor,0);
-  const totalProd = fat100+fat1l || 1;
-  charts.produto = new Chart(document.getElementById('chartProduto'), {
+/* ═══════════════ DESTROY CHART ═══════════════ */
+function destroyChart(id) {
+  if (CH[id]) { try { CH[id].destroy(); } catch(e){} CH[id] = null; }
+}
+
+/* ═══════════════ CHART OPTIONS ═══════════════ */
+const barOpts = (stacked=false) => ({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' R$ '+fmt(c.parsed.y)}}},
+  scales:{
+    x:{stacked,ticks:{color:'#8cc9a0',font:{size:10}},grid:{display:false}},
+    y:{stacked,ticks:{color:'#8cc9a0',callback:v=>'R$'+fmt(v),font:{size:10}},grid:{color:'rgba(131,206,13,.06)'}}
+  }
+});
+
+const hBarOpts = () => ({
+  indexAxis:'y', responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' R$ '+fmt(c.parsed.x)}}},
+  scales:{
+    x:{ticks:{color:'#8cc9a0',callback:v=>'R$'+fmt(v),font:{size:10}},grid:{color:'rgba(131,206,13,.06)'}},
+    y:{ticks:{color:'#8cc9a0',font:{size:11}},grid:{display:false}}
+  }
+});
+
+const doughnutOpts = (lbls) => ({
+  responsive:true, maintainAspectRatio:false,
+  cutout:'60%',
+  plugins:{
+    legend:{position:'right',labels:{color:'#8cc9a0',font:{size:11},padding:14}},
+    tooltip:{callbacks:{label:c=>` ${c.label}: R$ ${fmt(c.parsed)} (${Math.round(c.parsed/c.dataset.data.reduce((a,b)=>a+b,0)*100)}%)`}}
+  }
+});
+
+/* ═══════════════ KPIs ═══════════════ */
+function renderKPIs(d) {
+  const bruto = d.reduce((s,n)=>s+n.valor,0);
+  const vendas = d.filter(n=>n.status==='venda');
+  const liq = vendas.reduce((s,n)=>s+n.valor,0);
+  const tick = vendas.length ? liq/vendas.length : 0;
+  const clientes = new Set(d.map(n=>n.cliente)).size;
+  const deducoes = d.filter(n=>n.status!=='venda').reduce((s,n)=>s+n.valor,0);
+
+  g('kB').textContent  = fmtR(bruto);
+  g('kBs').textContent = `${d.length} notas no período`;
+  g('kL').textContent  = fmtR(liq);
+  g('kLs').textContent = `${vendas.length} notas de venda`;
+  g('kLn').textContent = deducoes > 0 ? `− R$ ${fmt(deducoes)} deduções` : '';
+  g('kN').textContent  = d.length;
+  g('kNs').textContent = `${vendas.length} vendas / ${d.length-vendas.length} outros`;
+  g('kT').textContent  = vendas.length ? fmtR(tick) : '—';
+  g('kTs').textContent = `base: ${vendas.length} vendas`;
+  g('kC').textContent  = clientes;
+  g('kCs').textContent = `clientes atendidos`;
+  g('fInfo').innerHTML = `Mostrando <strong>${d.length} notas</strong>`;
+}
+
+/* ═══════════════ DESTAQUE ═══════════════ */
+function renderDestaque(d) {
+  const byVend = {};
+  d.filter(n=>n.vendedor).forEach(n=>{
+    if (!byVend[n.vendedor]) byVend[n.vendedor] = {bruto:0,liq:0,qtd:0,nfs:0};
+    byVend[n.vendedor].bruto += n.valor;
+    if (n.status==='venda'){byVend[n.vendedor].liq+=n.valor;byVend[n.vendedor].qtd+=n.qtd;byVend[n.vendedor].nfs++;}
+  });
+  const sorted = Object.entries(byVend).sort((a,b)=>b[1].liq-a[1].liq);
+  if (!sorted.length) return;
+  const [top, topD] = sorted[0];
+  const maxLiq = topD.liq;
+
+  g('dName').textContent   = top;
+  g('dQtd').textContent    = topD.qtd + ' un.';
+  g('dBruto').textContent  = fmtR(topD.bruto);
+  g('dLiq').textContent    = fmtR(topD.liq);
+  g('dNF').textContent     = topD.nfs;
+
+  const rl = g('rankList');
+  rl.innerHTML = '';
+  sorted.slice(0,8).forEach(([v,vd],i)=>{
+    const pct = maxLiq>0 ? (vd.liq/maxLiq*100) : 0;
+    rl.innerHTML += `
+      <div class="rank-row">
+        <div class="rank-pos${i===0?' gold':''}">${i+1}</div>
+        <div class="rank-name">${v}</div>
+        <div class="rank-bar-w"><div class="rank-bar" style="width:${pct}%"></div></div>
+        <div class="rank-val">${fmtR(vd.liq)}</div>
+      </div>`;
+  });
+}
+
+/* ═══════════════ PRODUTOS ═══════════════ */
+function renderProd(d) {
+  ['100ml','1l'].forEach(p=>{
+    const pfx = p==='100ml'?'p100':'p1l';
+    const pd = d.filter(n=>n.produto===p);
+    const bruto = pd.reduce((s,n)=>s+n.valor,0);
+    const venda = pd.filter(n=>n.status==='venda');
+    const liq   = venda.reduce((s,n)=>s+n.valor,0);
+    const ded   = pd.filter(n=>n.status!=='venda').reduce((s,n)=>s+n.valor,0);
+    const qtd   = pd.reduce((s,n)=>s+n.qtd,0);
+    const avgPrc = venda.length? liq/venda.reduce((s,n)=>s+n.qtd,0) : 0;
+
+    g(pfx+'qtd').textContent    = qtd.toLocaleString('pt-BR') + ' un.';
+    g(pfx+'bruto').textContent  = fmtR(bruto);
+    g(pfx+'liq').textContent    = fmtR(liq);
+    g(pfx+'ded').textContent    = ded>0 ? '− '+fmtR(ded) : 'R$ 0';
+    g(pfx+'preco').textContent  = avgPrc>0 ? fmtR(avgPrc)+'/un.' : '—';
+    g(pfx+'saidas').textContent = pd.length + ' notas';
+  });
+}
+
+/* ═══════════════ CHART: SEMANAL ═══════════════ */
+function renderSemanal(d) {
+  destroyChart('cSem');
+  const vals = [1,2,3,4].map(s=>d.filter(n=>n.sem===s).reduce((sum,n)=>sum+n.valor,0));
+  CH['cSem'] = new Chart(g('cSem').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: SEMS,
+      datasets:[{
+        label:'Faturamento',
+        data: vals,
+        backgroundColor: vals.map((v,i)=>`rgba(131,206,13,${0.4+i*.15})`),
+        borderColor: G, borderWidth:2, borderRadius:6, borderSkipped:false
+      }]
+    },
+    options: barOpts()
+  });
+}
+
+/* ═══════════════ CHART: PRODUTO ═══════════════ */
+function renderProdChart(d) {
+  destroyChart('cProd');
+  const v100 = d.filter(n=>n.produto==='100ml').reduce((s,n)=>s+n.valor,0);
+  const v1l  = d.filter(n=>n.produto==='1l').reduce((s,n)=>s+n.valor,0);
+  if (!v100&&!v1l) return;
+  CH['cProd'] = new Chart(g('cProd').getContext('2d'), {
     type:'doughnut',
-    data:{ labels:['CarboZé 100ML','CarboZé 1L'], datasets:[{
-      data:[fat100,fat1l], backgroundColor:['#3b82f6','#f59e0b'],
-      borderColor:['#1e40af','#b45309'], borderWidth:2, hoverOffset:12
-    }]},
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'60%',
-      plugins:{ legend:{position:'bottom',labels:{padding:20,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:ctx=>ctx.label+': R$ '+ctx.raw.toLocaleString('pt-BR')+' ('+ ((ctx.raw/totalProd)*100).toFixed(1)+'%)'}} }
-    }
+    data:{
+      labels:['CarboZé 100ML','CarboZé 1L'],
+      datasets:[{data:[v100,v1l],backgroundColor:[G,G2],borderColor:['#0c4535','#0c4535'],borderWidth:3}]
+    },
+    options: doughnutOpts(['CarboZé 100ML','CarboZé 1L'])
   });
+}
 
-  // 3. Top 10 clientes por faturamento
-  const clienteMap = {};
-  data.forEach(n => { clienteMap[n.cliente] = (clienteMap[n.cliente]||0)+n.valor; });
-  const top10 = Object.entries(clienteMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  charts.clientes = new Chart(document.getElementById('chartClientes'), {
+/* ═══════════════ CHART: VENDEDOR ═══════════════ */
+function renderVendedor(d) {
+  destroyChart('cVend');
+  const vmap = {};
+  d.filter(n=>n.vendedor && n.status==='venda').forEach(n=>{
+    vmap[n.vendedor] = (vmap[n.vendedor]||0)+n.valor;
+  });
+  const sorted = Object.entries(vmap).sort((a,b)=>b[1]-a[1]);
+  if (!sorted.length) return;
+  CH['cVend'] = new Chart(g('cVend').getContext('2d'), {
     type:'bar',
-    data:{ labels:top10.map(c=>c[0]), datasets:[{
-      label:'Faturamento (R$)', data:top10.map(c=>c[1]),
-      backgroundColor:'#3b82f6aa', borderColor:'#3b82f6', borderWidth:1.5, borderRadius:6
-    }]},
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}} },
-      scales:{ x:{beginAtZero:true,ticks:{callback:v=>'R$ '+(v/1000).toFixed(1)+'k'},grid:{color:'#1e293b'}}, y:{grid:{display:false},ticks:{font:{size:11}}} }
-    }
+    data:{
+      labels: sorted.map(e=>e[0]),
+      datasets:[{
+        label:'Fat. Líquido',
+        data: sorted.map(e=>e[1]),
+        backgroundColor: sorted.map((_,i)=>VCOLS[i%VCOLS.length]+'cc'),
+        borderColor:     sorted.map((_,i)=>VCOLS[i%VCOLS.length]),
+        borderWidth:2, borderRadius:6, borderSkipped:false
+      }]
+    },
+    options: barOpts()
   });
+}
 
-  // 4. Status donut
-  const statusCounts = {};
-  data.forEach(n => { statusCounts[n.status] = (statusCounts[n.status]||0)+1; });
-  const statusLabels = [], statusData = [], statusColors = [];
-  const colorMap = { venda:'#22c55e', cancelada:'#ef4444', bonificacao:'#f59e0b', baixa:'#3b82f6' };
-  ['venda','cancelada','bonificacao','baixa'].forEach(s => {
-    if (statusCounts[s]) { statusLabels.push(STATUS_MAP[s]); statusData.push(statusCounts[s]); statusColors.push(colorMap[s]); }
+/* ═══════════════ CHART: CLIENTES ═══════════════ */
+function renderClientes(d) {
+  destroyChart('cCli');
+  const cmap = {};
+  d.forEach(n=>{ cmap[n.cliente] = (cmap[n.cliente]||0)+n.valor; });
+  const sorted = Object.entries(cmap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  CH['cCli'] = new Chart(g('cCli').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: sorted.map(e=>e[0].length>22?e[0].substring(0,22)+'…':e[0]),
+      datasets:[{
+        label:'Valor', data:sorted.map(e=>e[1]),
+        backgroundColor:`rgba(131,206,13,.3)`, borderColor:G, borderWidth:2,
+        borderRadius:5, borderSkipped:false
+      }]
+    },
+    options: hBarOpts()
   });
-  const totalStatus = statusData.reduce((a,b)=>a+b,0) || 1;
-  charts.status = new Chart(document.getElementById('chartStatus'), {
+}
+
+/* ═══════════════ CHART: STATUS ═══════════════ */
+function renderStatus(d) {
+  destroyChart('cStat');
+  const smap = {};
+  d.forEach(n=>{ smap[n.status] = (smap[n.status]||0)+n.valor; });
+  const entries = Object.entries(smap);
+  const colMap  = {venda:G,cancelada:RED,bonificacao:AMB,baixa:BLU};
+  CH['cStat'] = new Chart(g('cStat').getContext('2d'), {
     type:'doughnut',
-    data:{ labels:statusLabels, datasets:[{ data:statusData, backgroundColor:statusColors, borderColor:'#1e293b', borderWidth:3, hoverOffset:10 }]},
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'55%',
-      plugins:{ legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+' notas ('+((ctx.raw/totalStatus)*100).toFixed(0)+'%)'}} }
-    }
+    data:{
+      labels: entries.map(e=>SL[e[0]]||e[0]),
+      datasets:[{
+        data: entries.map(e=>e[1]),
+        backgroundColor: entries.map(e=>(colMap[e[0]]||TQ)+'cc'),
+        borderColor:     entries.map(e=>colMap[e[0]]||TQ),
+        borderWidth:2
+      }]
+    },
+    options: doughnutOpts(entries.map(e=>SL[e[0]]||e[0]))
   });
+}
 
-  // 5. Ticket Médio — SOMENTE VENDAS
-  const vendasOnly = data.filter(n => n.status === 'venda');
-  const ticketMap = {};
-  const ticketCount = {};
-  vendasOnly.forEach(n => {
-    ticketMap[n.cliente] = (ticketMap[n.cliente]||0) + n.valor;
-    ticketCount[n.cliente] = (ticketCount[n.cliente]||0) + 1;
+/* ═══════════════ CHART: TICKET ═══════════════ */
+function renderTicket(d) {
+  destroyChart('cTick');
+  const cmap = {};
+  d.filter(n=>n.status==='venda').forEach(n=>{
+    if(!cmap[n.cliente]) cmap[n.cliente] = {sum:0,cnt:0};
+    cmap[n.cliente].sum+=n.valor; cmap[n.cliente].cnt++;
   });
-  const ticketAvg = {};
-  Object.keys(ticketMap).forEach(c => { ticketAvg[c] = Math.round(ticketMap[c] / ticketCount[c]); });
-  const top10ticket = Object.entries(ticketAvg).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  charts.ticket = new Chart(document.getElementById('chartTicket'), {
+  const sorted = Object.entries(cmap).map(([c,v])=>({c,t:v.sum/v.cnt})).sort((a,b)=>b.t-a.t).slice(0,10);
+  if (!sorted.length) return;
+  CH['cTick'] = new Chart(g('cTick').getContext('2d'), {
     type:'bar',
-    data:{ labels:top10ticket.map(c=>c[0]), datasets:[{
-      label:'Ticket Médio (R$)', data:top10ticket.map(c=>c[1]),
-      backgroundColor:'#a855f7aa', borderColor:'#a855f7', borderWidth:1.5, borderRadius:6
-    }]},
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}} },
-      scales:{ x:{beginAtZero:true,ticks:{callback:v=>'R$ '+(v/1000).toFixed(1)+'k'},grid:{color:'#1e293b'}}, y:{grid:{display:false},ticks:{font:{size:11}}} }
-    }
+    data:{
+      labels: sorted.map(e=>e.c.length>22?e.c.substring(0,22)+'…':e.c),
+      datasets:[{
+        label:'Ticket Médio', data:sorted.map(e=>e.t),
+        backgroundColor:`rgba(169,218,0,.3)`,borderColor:G2,borderWidth:2,
+        borderRadius:5, borderSkipped:false
+      }]
+    },
+    options: hBarOpts()
   });
+}
 
-  // 6. Volume 100ML
-  const vol100 = {};
-  data.filter(n=>n.produto==='100ml').forEach(n => { vol100[n.data] = (vol100[n.data]||0)+n.qtd; });
-  const volLabels = DATAS_100ML.filter(d => vol100[d]);
-  const volData = volLabels.map(d => vol100[d]||0);
-  charts.volume = new Chart(document.getElementById('chartVolume100'), {
+/* ═══════════════ CHART: VOLUME 100ML ═══════════════ */
+function renderVol(d) {
+  destroyChart('cVol');
+  const vmap = {};
+  d.filter(n=>n.produto==='100ml').forEach(n=>{ vmap[n.data] = (vmap[n.data]||0)+n.qtd; });
+  const dates = Object.keys(vmap).sort((a,b)=>{
+    const [da,ma] = a.split('/').map(Number);
+    const [db,mb] = b.split('/').map(Number);
+    return (ma*100+da)-(mb*100+db);
+  });
+  CH['cVol'] = new Chart(g('cVol').getContext('2d'), {
     type:'line',
-    data:{ labels:volLabels, datasets:[{
-      label:'Unidades (100ML)', data:volData,
-      borderColor:'#22c55e', backgroundColor:'#22c55e22',
-      fill:true, tension:0.3, pointRadius:5, pointBackgroundColor:'#22c55e', pointBorderColor:'#0f172a', pointBorderWidth:2
-    }]},
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.raw+' unidades'}} },
-      scales:{ y:{beginAtZero:true,grid:{color:'#1e293b'}}, x:{grid:{display:false},ticks:{font:{size:10}}} }
+    data:{
+      labels: dates,
+      datasets:[{
+        label:'Unidades', data:dates.map(k=>vmap[k]),
+        borderColor:G, backgroundColor:'rgba(131,206,13,.12)',
+        pointBackgroundColor:G, pointRadius:5, fill:true, tension:.35
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.y} unidades`}}},
+      scales:{
+        x:{ticks:{color:'#8cc9a0',font:{size:10}},grid:{display:false}},
+        y:{ticks:{color:'#8cc9a0',font:{size:10}},grid:{color:'rgba(131,206,13,.06)'}}
+      }
     }
   });
 }
 
-/* ==================== GLOBAL FILTER ==================== */
-function applyFilter(status, btn) {
-  currentFilter = status;
-  document.querySelectorAll('.global-filter .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const data = filtered(status);
-  document.getElementById('filterIndicator').innerHTML = 'Mostrando <strong>'+data.length+' nota'+(data.length!==1?'s':'')+'</strong>';
-
-  updateKPIs(data);
-  updateProductCards(data);
-  buildTable(data);
-  buildCharts(data);
+/* ═══════════════ TABLE ═══════════════ */
+function renderTable(d) {
+  const total = d.reduce((s,n)=>s+n.valor,0);
+  g('tSum').innerHTML = `<strong>${d.length}</strong> nota(s) &mdash; filtros ativos: status = <strong>${F.status==='todos'?'Todos':SL[F.status]}</strong> | vendedor = <strong>${F.vendedor==='todos'?'Todos':F.vendedor}</strong>`;
+  g('tTotal').textContent = fmtR(total);
+  g('tBody').innerHTML = d.map(n=>`
+    <tr>
+      <td><strong>${n.nf}</strong></td>
+      <td>${n.data}</td>
+      <td>${n.cliente}</td>
+      <td class="vtag">${n.vendedor||'—'}</td>
+      <td><span class="badge ${BC[n.status]||'bv'}">${SL[n.status]||n.status}</span></td>
+      <td class="tr"><strong>${fmtR(n.valor)}</strong></td>
+    </tr>`).join('');
 }
 
-/* ==================== INIT ==================== */
-updateKPIs(NOTAS);
-updateProductCards(NOTAS);
-buildTable(NOTAS);
-buildCharts(NOTAS);
-</script>
+/* ═══════════════ REFRESH ═══════════════ */
+function refresh() {
+  const d = getData();
+  renderKPIs(d);
+  renderDestaque(d);
+  renderProd(d);
+  renderSemanal(d);
+  renderProdChart(d);
+  renderVendedor(d);
+  renderClientes(d);
+  renderStatus(d);
+  renderTicket(d);
+  renderVol(d);
+  renderTable(d);
+}
 
+/* ═══════════════ INIT ═══════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  buildVSelect();
+  // mark "Todos" button active
+  document.querySelectorAll('.fb').forEach(b => {
+    if (b.textContent.trim() === 'Todos') b.classList.add('active');
+  });
+  refresh();
+});
+</script>
 </body>
 </html>
