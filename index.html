@@ -255,6 +255,37 @@ tfoot td{
 .bx{background:rgba(59,130,246,.12);color:#60a5fa;}
 .vtag{font-size:11px;color:var(--txt3);font-weight:600;}
 
+/* ── Metas ──────────────────────────── */
+.metas-card{
+  background:var(--card);border-radius:14px;padding:20px 24px;
+  border:1px solid var(--border);margin-bottom:28px;
+}
+.metas-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+.metas-title{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;}
+.metas-inputs{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--txt3);}
+.meta-input{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:8px;
+  color:var(--green);font-size:12px;font-weight:700;font-family:'Barlow Condensed',sans-serif;
+  padding:3px 8px;width:90px;text-align:right;
+}
+.meta-input:focus{outline:none;border-color:var(--green);}
+.meta-row{margin-bottom:12px;}
+.meta-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;}
+.meta-label span:first-child{color:var(--txt2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.meta-label span:last-child{color:var(--txt);font-weight:700;}
+.meta-bar-w{height:7px;background:rgba(131,206,13,.08);border-radius:4px;overflow:hidden;}
+.meta-bar{height:100%;border-radius:4px;transition:width .5s;}
+.meta-bar.ok{background:linear-gradient(90deg,var(--gc-blue),var(--gc-green));}
+.meta-bar.warn{background:var(--amber);}
+.meta-bar.crit{background:var(--red);}
+.meta-proj{font-size:10px;color:var(--txt3);margin-top:4px;}
+/* ── CSV Export ─────────────────────── */
+.btn-csv{
+  background:rgba(131,206,13,.1);border:1.5px solid var(--border2);
+  color:var(--green);font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;
+  padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .2s;
+}
+.btn-csv:hover{background:rgba(131,206,13,.22);border-color:var(--green);}
 /* ── Footer ─────────────────────────── */
 .footer{
   text-align:center;padding:24px;color:var(--txt3);font-size:12px;
@@ -327,6 +358,18 @@ tfoot td{
     <div class="kpi c3"><div class="kpi-lbl">Total de Notas</div><div class="kpi-val" id="kN">—</div><div class="kpi-sub" id="kNs"></div></div>
     <div class="kpi c4"><div class="kpi-lbl">Ticket Médio (Vendas)</div><div class="kpi-val" id="kT">—</div><div class="kpi-sub" id="kTs"></div></div>
     <div class="kpi c5"><div class="kpi-lbl">Clientes Únicos</div><div class="kpi-val" id="kC">—</div><div class="kpi-sub" id="kCs"></div></div>
+  </div>
+
+  <!-- Metas do Mês -->
+  <div class="metas-card">
+    <div class="metas-header">
+      <span class="metas-title">🎯 Metas do Mês</span>
+      <div class="metas-inputs">
+        <span>Meta Fat. (R$): <input class="meta-input" id="metaFat" type="number" value="50000" oninput="renderMetas()"></span>
+        <span>Meta Vendas: <input class="meta-input" id="metaVendas" type="number" value="25" oninput="renderMetas()"> NFs</span>
+      </div>
+    </div>
+    <div id="metas-body"></div>
   </div>
 
   <!-- Destaque Vendedor -->
@@ -440,7 +483,10 @@ tfoot td{
 
   <!-- Table -->
   <div class="table-card">
-    <h3>Detalhamento das Notas Fiscais</h3>
+    <h3 style="display:flex;justify-content:space-between;align-items:center;">
+      Detalhamento das Notas Fiscais
+      <button class="btn-csv" onclick="exportCSV()">⬇ Exportar CSV</button>
+    </h3>
     <div class="tbl-sum" id="tSum"></div>
     <table>
       <thead><tr><th>NF</th><th>Data</th><th>Cliente</th><th>Vendedor</th><th>Status</th><th class="tr">Valor (R$)</th></tr></thead>
@@ -839,10 +885,74 @@ function renderTable(d) {
     </tr>`).join('');
 }
 
+/* ═══════════════ METAS (TASK 14) ═══════════════ */
+function renderMetas() {
+  const fatMeta  = Math.max(1, Number(g('metaFat').value)    || 50000);
+  const nfsMeta  = Math.max(1, Number(g('metaVendas').value) || 25);
+  localStorage.setItem('meta_fat',  fatMeta);
+  localStorage.setItem('meta_nfs',  nfsMeta);
+
+  const vendas   = NOTAS.filter(n => n.status === 'venda');
+  const fatAtual = vendas.reduce((s, n) => s + n.valor, 0);
+  const nfsAtual = vendas.length;
+
+  // Projeção: dias corridos até hoje vs total do mês
+  const hoje    = new Date();
+  const diasMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+  const diaHoje = Math.max(1, hoje.getDate());
+  const proj    = v => Math.round(v * (diasMes / diaHoje));
+
+  const pct = (a, m) => Math.min(100, Math.round(a / m * 100));
+  const cls = p => p >= 80 ? 'ok' : p >= 40 ? 'warn' : 'crit';
+  const pF  = pct(fatAtual, fatMeta);
+  const pN  = pct(nfsAtual, nfsMeta);
+
+  const row = (lbl, atual, meta, pctV, projV, unid) => `
+    <div class="meta-row">
+      <div class="meta-label">
+        <span>${lbl}</span>
+        <span>${unid === 'R$' ? fmtR(atual) : atual + ' NFs'} / ${unid === 'R$' ? fmtR(meta) : meta + ' NFs'} &mdash; ${pctV}%</span>
+      </div>
+      <div class="meta-bar-w"><div class="meta-bar ${cls(pctV)}" style="width:${pctV}%"></div></div>
+      <div class="meta-proj">Projeção fim de mês: ${unid === 'R$' ? fmtR(projV) : projV + ' NFs'}
+        &bull; ${pctV >= 100 ? '✅ Meta atingida!' : 'Faltam ' + (unid === 'R$' ? fmtR(meta - atual) : (meta - atual) + ' NFs')}
+      </div>
+    </div>`;
+
+  g('metas-body').innerHTML =
+    row('Faturamento Bruto (Vendas)', fatAtual, fatMeta, pF, proj(fatAtual), 'R$') +
+    row('Notas de Venda', nfsAtual, nfsMeta, pN, proj(nfsAtual), 'NFs');
+}
+
+/* ═══════════════ EXPORTAR CSV (TASK 15) ═══════════════ */
+function exportCSV() {
+  const d = getData();
+  const sel = document.getElementById('period-select');
+  const periodo = sel ? sel.options[sel.selectedIndex]?.text.replace(' ','') || 'export' : 'export';
+  const header = 'NF;Data;Cliente;Vendedor;Status;Produto;Qtd;Valor (R$)\n';
+  const rows = d.map(n => [
+    n.nf,
+    n.data,
+    '"' + (n.cliente  || '').replace(/"/g, '""') + '"',
+    '"' + (n.vendedor || '—' ).replace(/"/g, '""') + '"',
+    SL[n.status] || n.status,
+    n.produto,
+    n.qtd,
+    String(n.valor).replace('.', ',')
+  ].join(';')).join('\n');
+  const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `GrupoCarbo_${periodo}_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
 /* ═══════════════ REFRESH ═══════════════ */
 function refresh() {
   const d = getData();
   renderKPIs(d);
+  renderMetas();
   renderDestaque(d);
   renderProd(d);
   renderSemanal(d);
@@ -908,6 +1018,12 @@ function navPeriod(dir) {
 
 /* ═══════════════ INIT ═══════════════ */
 window.addEventListener('DOMContentLoaded', () => {
+  // Restaura metas salvas
+  const savedFat = localStorage.getItem('meta_fat');
+  const savedNfs = localStorage.getItem('meta_nfs');
+  if (savedFat && g('metaFat'))    g('metaFat').value    = savedFat;
+  if (savedNfs && g('metaVendas')) g('metaVendas').value = savedNfs;
+
   document.body.insertAdjacentHTML('afterbegin',
     '<div id="czload" style="position:fixed;inset:0;background:#062520ee;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Barlow,sans-serif;color:#83ce0d;font-size:1.1rem;letter-spacing:.05em;">Sincronizando dados Bling...</div>');
 

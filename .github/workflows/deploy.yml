@@ -41,3 +41,29 @@ jobs:
           git add data/pedidos.json data/meta.json data/historico/
           git diff --staged --quiet || git commit -m "chore: sync Bling $(date +'%d/%m/%Y %H:%M')"
           git push
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: sync-bling
+    if: failure()
+    steps:
+      - name: Send failure notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASS }}
+          subject: "[Grupo Carbo] ❌ Falha no sync Bling – ${{ github.run_id }}"
+          to: ${{ secrets.MAIL_USER }}
+          from: Dashboard Grupo Carbo <${{ secrets.MAIL_USER }}>
+          body: |
+            O workflow de sincronização com o Bling falhou.
+
+            Repositório : ${{ github.repository }}
+            Branch      : ${{ github.ref_name }}
+            Run ID      : ${{ github.run_id }}
+            Hora        : ${{ github.event.head_commit.timestamp }}
+
+            Acesse os logs em:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
