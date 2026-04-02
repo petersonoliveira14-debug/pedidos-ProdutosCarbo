@@ -267,6 +267,7 @@ tfoot td{
     <div class="logo-area">
       <div class="logo-icon">CZ</div>
       <h1><span>CarboZé</span> &mdash; Dashboard Financeiro</h1>
+  <span id="sync-badge" style="font-size:.75rem;color:#4d8a09;background:rgba(131,206,13,.12);padding:4px 12px;border-radius:20px;letter-spacing:.03em;">Carregando...</span>
     </div>
     <div class="period">Fevereiro 2026</div>
   </div>
@@ -433,7 +434,7 @@ Chart.defaults.borderColor = 'rgba(131,206,13,.12)';
 Chart.defaults.font.family = "'Barlow', sans-serif";
 
 /* ═══════════════ DATA ═══════════════ */
-const NOTAS = [
+let NOTAS = [
   {nf:152,data:'02/02',sem:1,cliente:'Flor Comércio de Combustíveis',   status:'venda',      valor:1300,produto:'100ml',qtd:100, vendedor:'Márcio Vannucci'},
   {nf:153,data:'02/02',sem:1,cliente:'Flor Real Serviços',              status:'venda',      valor:650, produto:'100ml',qtd:50,  vendedor:'Márcio Vannucci'},
   {nf:154,data:'02/02',sem:1,cliente:'Nordeste Rolamentos',             status:'venda',      valor:1950,produto:'100ml',qtd:150, vendedor:'Rodrigo Torquato'},
@@ -471,7 +472,7 @@ const TQ  = '#14b8a6';
 
 const VCOLS = [G,'#4ade80',G2,'#22d3ee','#c084fc','#fb923c','#f472b6','#67e8f9','#86efac','#fde68a','#a5b4fc'];
 
-const ALL_VENDS = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
+let ALL_VENDS = [];
 let F = {status:'todos', vendedor:'todos'};
 let CH = {};
 
@@ -819,11 +820,41 @@ function refresh() {
 
 /* ═══════════════ INIT ═══════════════ */
 window.addEventListener('DOMContentLoaded', () => {
-  buildVSelect();
-  // mark "Todos" button active
-  document.querySelectorAll('.fb').forEach(b => {
-    if (b.textContent.trim() === 'Todos') b.classList.add('active');
-  });
+  // Loading overlay
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div id="czload" style="position:fixed;inset:0;background:#062520ee;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Barlow,sans-serif;color:#83ce0d;font-size:1.1rem;letter-spacing:.05em;">Sincronizando dados Bling...</div>');
+
+  fetch('data/pedidos.json')
+    .then(r => { if(!r.ok) throw new Error('offline'); return r.json(); })
+    .then(data => {
+      NOTAS = data;
+      ALL_VENDS = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
+      buildVSelect();
+      document.querySelectorAll('.fb').forEach(b => {
+        if (b.textContent.trim() === 'Todos') b.classList.add('active');
+      });
+      refresh();
+      document.getElementById('czload').remove();
+      return fetch('data/meta.json').then(r=>r.json());
+    })
+    .then(meta => {
+      const el = document.getElementById('sync-badge');
+      if (el) el.textContent = '⚡ Atualizado: ' + meta.ultima_atualizacao + ' • ' + meta.total + ' pedidos';
+    })
+    .catch(() => {
+      // fallback: dados hardcoded ainda funcionam
+      ALL_VENDS = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
+      buildVSelect();
+      document.querySelectorAll('.fb').forEach(b => {
+        if (b.textContent.trim() === 'Todos') b.classList.add('active');
+      });
+      refresh();
+      const ld = document.getElementById('czload');
+      if (ld) ld.remove();
+      const el = document.getElementById('sync-badge');
+      if (el) el.textContent = '⚠ Dados locais (sem conexao Bling)';
+    });
+});
   refresh();
 });
 </script>
