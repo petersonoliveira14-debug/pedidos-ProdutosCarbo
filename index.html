@@ -184,15 +184,11 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--txt);min-h
 .adm-table tbody tr.ov td:first-child::after{content:' ✏';color:var(--amber);font-size:9px;}
 .adm-vsel{
   background:var(--bg);border:1px solid var(--border);border-radius:6px;
-  color:var(--txt);font-size:10px;font-family:'Barlow',sans-serif;
-  padding:3px 6px;width:130px;cursor:pointer;
+  color:var(--txt);font-size:11px;font-family:'Barlow',sans-serif;
+  padding:5px 8px;width:160px;
 }
-.adm-vsel:focus{outline:none;border-color:var(--green);}
-.adm-input-new{
-  background:var(--bg);border:1px solid var(--border);border-radius:6px;
-  color:var(--txt);font-size:10px;font-family:'Barlow',sans-serif;
-  padding:3px 6px;width:130px;
-}
+.adm-vsel:focus{outline:none;border-color:var(--green);background:var(--bg2);}
+.adm-vsel::placeholder{color:var(--txt3);font-size:10px;}
 
 /* ── Layout ──────────────────────────────────────────── */
 .container{max-width:1440px;margin:0 auto;padding:24px 24px;}
@@ -355,6 +351,19 @@ tfoot td{padding:10px 10px;font-weight:700;color:var(--green);border-top:2px sol
 .marca-cze{font-size:9px;font-weight:700;background:rgba(131,206,13,.1);color:var(--green);padding:1px 6px;border-radius:8px;}
 .marca-cpro{font-size:9px;font-weight:700;background:rgba(20,184,166,.1);color:var(--cpro);padding:1px 6px;border-radius:8px;}
 
+/* ── Pagination ──────────────────────────────────────── */
+.tbl-pagination{display:flex;align-items:center;gap:4px;margin-top:14px;flex-wrap:wrap;}
+.pg-btn{
+  background:rgba(131,206,13,.08);border:1px solid var(--border);
+  color:var(--txt2);font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;
+  padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s;min-width:30px;text-align:center;
+}
+.pg-btn:hover:not(:disabled){background:rgba(131,206,13,.2);border-color:var(--green);color:var(--green);}
+.pg-btn:disabled{opacity:.3;cursor:default;}
+.pg-active{background:var(--green)!important;color:#062520!important;border-color:var(--green)!important;cursor:default;}
+.pg-dots{color:var(--txt3);font-size:11px;padding:0 4px;}
+.pg-info{font-size:10px;color:var(--txt3);margin-left:8px;}
+
 /* ── CSV ─────────────────────────────────────────────── */
 .btn-csv{background:rgba(131,206,13,.1);border:1.5px solid var(--border2);color:var(--green);font-size:10px;font-weight:700;font-family:'Barlow',sans-serif;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .2s;}
 .btn-csv:hover{background:rgba(131,206,13,.22);border-color:var(--green);}
@@ -481,10 +490,18 @@ tfoot td{padding:10px 10px;font-weight:700;color:var(--green);border-top:2px sol
       </div>
       <div class="adm-ok" id="adm-vend-ok"></div>
     </div>
-    <!-- Tab Senha -->
+    <!-- Tab Senha / Config -->
     <div class="adm-panel" id="adm-tab-senha" style="display:none;">
       <div class="adm-field">
-        <label>Nova Senha</label>
+        <label>Token GitHub (PAT) — para publicar vendedores no servidor</label>
+        <input type="password" class="adm-input" id="adm-gh-pat" placeholder="ghp_...">
+        <div style="font-size:9px;color:var(--txt3);margin-top:4px;">Gere em GitHub → Settings → Developer settings → Personal access tokens (repo scope)</div>
+      </div>
+      <button class="adm-btn" onclick="admSavePat()" style="margin-bottom:18px;">💾 Salvar Token</button>
+      <div class="adm-ok" id="adm-pat-ok"></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
+      <div class="adm-field">
+        <label>Nova Senha do Admin</label>
         <input type="password" class="adm-input" id="adm-new-pass" placeholder="Nova senha">
       </div>
       <div class="adm-field">
@@ -630,6 +647,7 @@ tfoot td{padding:10px 10px;font-weight:700;color:var(--green);border-top:2px sol
       <tbody id="tBody"></tbody>
       <tfoot><tr><td colspan="8">TOTAL FILTRADO</td><td class="tr" id="tTotal">—</td></tr></tfoot>
     </table>
+    <div class="tbl-pagination" id="tPagination"></div>
   </div>
 
   <div class="footer">
@@ -714,13 +732,23 @@ const getData = () => NOTAS.filter(n => {
 
 /* ═══════════════ VENDOR OVERRIDES ═══════════════ */
 const VEND_OV_KEY = 'vendor_overrides';
+let SERVER_VEND = {}; // loaded from data/vendedores.json
+
 function getOverrides() {
-  try { return JSON.parse(localStorage.getItem(VEND_OV_KEY) || '{}'); } catch(e) { return {}; }
+  // Merge: server base + local overrides on top
+  const local = (() => { try { return JSON.parse(localStorage.getItem(VEND_OV_KEY)||'{}'); } catch(e) { return {}; } })();
+  return {...SERVER_VEND, ...local};
 }
 function applyVendorOverrides() {
   const ov = getOverrides();
   if (!Object.keys(ov).length) return;
   NOTAS.forEach(n => { if (ov[n.nf] !== undefined) n.vendedor = ov[n.nf] || null; });
+}
+function loadServerVendedores() {
+  return fetch('data/vendedores.json')
+    .then(r => { if(!r.ok) throw new Error('no-vend'); return r.json(); })
+    .then(data => { SERVER_VEND = data || {}; })
+    .catch(() => { SERVER_VEND = {}; });
 }
 
 /* ═══════════════ DROPDOWN ═══════════════ */
@@ -1015,30 +1043,69 @@ function renderVol(d) {
   });
 }
 
-/* ═══════════════ TABLE ═══════════════ */
+/* ═══════════════ TABLE (PAGINATED) ═══════════════ */
+const TBL_PER_PAGE = 20;
+let TBL_PAGE = 1;
+let TBL_DATA = [];
+
 function renderTable(d) {
+  TBL_DATA = d;
+  TBL_PAGE = 1;
+  renderTablePage();
+}
+
+function renderTablePage() {
+  const d = TBL_DATA;
   const total = d.reduce((s,n)=>s+n.valor,0);
   const ov = getOverrides();
+  const totalPages = Math.max(1, Math.ceil(d.length / TBL_PER_PAGE));
+  if (TBL_PAGE > totalPages) TBL_PAGE = totalPages;
+  const start = (TBL_PAGE - 1) * TBL_PER_PAGE;
+  const pageData = d.slice(start, start + TBL_PER_PAGE);
+
   g('tSum').innerHTML = `<strong>${d.length}</strong> pedido(s) &mdash; status: <strong>${F.status==='todos'?'Todos':SL[F.status]||F.status}</strong> | produto: <strong>${F.linha==='todos'?'Todos':F.linha}</strong> | vendedor: <strong>${F.vendedor==='todos'?'Todos':F.vendedor}</strong>`;
   g('tTotal').textContent = fmtR(total);
-  g('tBody').innerHTML = d.map(n=>{
+  g('tBody').innerHTML = pageData.map(n=>{
     const marca = getMarca(n);
     const marcaTag = marca==='carbopro'
       ? `<span class="marca-cpro">CarboPro</span>`
       : `<span class="marca-cze">CarboZé</span>`;
     const hasOv = ov[n.nf] !== undefined;
     return `<tr>
-      <td><strong>#${n.nf}</strong></td>
+      <td><strong>NF ${n.nf}</strong></td>
       <td>${n.data}</td>
       <td>${n.cliente}</td>
       <td class="vtag">${n.vendedor||'—'}${hasOv?' <span style="color:var(--amber);font-size:9px;" title="Atribuído via Admin">✏</span>':''}</td>
       <td><span class="badge ${BC[n.status]||'bv'}">${SL[n.status]||n.status}</span></td>
       <td>${marcaTag}</td>
       <td style="font-size:10px;color:var(--txt3);">${n.produto==='1l'?'1 Litro':'100ml'}</td>
-      <td class="tr">${n.qtd.toLocaleString('pt-BR')}</td>
+      <td class="tr">${(n.qtd||0).toLocaleString('pt-BR')}</td>
       <td class="tr"><strong>${fmtR(n.valor)}</strong></td>
     </tr>`;
   }).join('');
+
+  // Pagination controls
+  const pg = g('tPagination');
+  if (pg) {
+    if (totalPages <= 1) { pg.innerHTML = ''; return; }
+    let btns = '';
+    btns += `<button class="pg-btn" ${TBL_PAGE<=1?'disabled':''} onclick="tblPage(${TBL_PAGE-1})">‹</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === TBL_PAGE) btns += `<button class="pg-btn pg-active">${i}</button>`;
+      else if (i <= 2 || i >= totalPages-1 || Math.abs(i-TBL_PAGE) <= 1) btns += `<button class="pg-btn" onclick="tblPage(${i})">${i}</button>`;
+      else if (i === 3 && TBL_PAGE > 4) btns += `<span class="pg-dots">…</span>`;
+      else if (i === totalPages-2 && TBL_PAGE < totalPages-3) btns += `<span class="pg-dots">…</span>`;
+    }
+    btns += `<button class="pg-btn" ${TBL_PAGE>=totalPages?'disabled':''} onclick="tblPage(${TBL_PAGE+1})">›</button>`;
+    btns += `<span class="pg-info">Pág ${TBL_PAGE}/${totalPages} (${start+1}–${Math.min(start+TBL_PER_PAGE,d.length)} de ${d.length})</span>`;
+    pg.innerHTML = btns;
+  }
+}
+
+function tblPage(p) {
+  TBL_PAGE = p;
+  renderTablePage();
+  g('tBody')?.parentElement?.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 /* ═══════════════ EXPORTAR CSV ═══════════════ */
@@ -1219,6 +1286,7 @@ function admLogin() {
     g('adm-meta-fat').value = localStorage.getItem('meta_fat') || 50000;
     g('adm-meta-ped').value = localStorage.getItem('meta_nfs') || 25;
     g('adm-metas-ok').textContent = '';
+    g('adm-gh-pat').value = localStorage.getItem('gh_pat') || '';
     admTab('metas', document.querySelector('.adm-tab'));
   } else {
     g('adm-err').textContent = 'Senha incorreta.';
@@ -1244,56 +1312,92 @@ function admSaveMetas() {
 }
 function renderAdmVendList() {
   const overrides = getOverrides();
-  const allVends = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
-  const opts = ['', ...allVends].map(v=>`<option value="${v}">${v||'— sem vendedor —'}</option>`).join('');
+  // Collect all known vendors (from data + overrides)
+  const allVends = [...new Set([
+    ...NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor),
+    ...Object.values(overrides).filter(Boolean)
+  ])].sort();
+  const dlOpts = allVends.map(v=>`<option value="${v}">`).join('');
   g('adm-vend-list').innerHTML = `
+    <datalist id="adm-vend-dl">${dlOpts}</datalist>
     <table class="adm-table">
       <thead><tr><th>Pedido</th><th>Data</th><th>Cliente</th><th>Vendedor</th></tr></thead>
       <tbody>${NOTAS.map(n=>{
         const hasOv = overrides[n.nf] !== undefined;
+        const cur = hasOv ? (overrides[n.nf]||'') : (n.vendedor||'');
         return `<tr class="${hasOv?'ov':''}">
           <td>#${n.nf}</td>
           <td>${n.data}</td>
-          <td title="${n.cliente}">${n.cliente.length>22?n.cliente.substring(0,22)+'…':n.cliente}</td>
-          <td>
-            <select class="adm-vsel" data-nf="${n.nf}">${opts}</select>
-            <input class="adm-input-new" data-nf-new="${n.nf}" placeholder="Novo vendedor..." style="display:none;margin-top:3px;">
-          </td>
+          <td title="${n.cliente}">${n.cliente.length>25?n.cliente.substring(0,25)+'…':n.cliente}</td>
+          <td><input class="adm-vsel" data-nf="${n.nf}" list="adm-vend-dl" value="${cur.replace(/"/g,'&quot;')}" placeholder="Digite o vendedor..."></td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
-  // Set current values
-  NOTAS.forEach(n=>{
-    const sel = g('adm-vend-list').querySelector(`[data-nf="${n.nf}"]`);
-    if (!sel) return;
-    const cur = overrides[n.nf] !== undefined ? overrides[n.nf] : (n.vendedor||'');
-    if ([...sel.options].some(o=>o.value===cur)) sel.value = cur;
-    else {
-      // not in list, show as option
-      const o = document.createElement('option');
-      o.value = cur; o.textContent = cur||'— sem vendedor —'; sel.appendChild(o); sel.value=cur;
-    }
-  });
 }
 function admSaveVendedores() {
   const overrides = {};
-  document.querySelectorAll('#adm-vend-list .adm-vsel').forEach(sel=>{
-    overrides[sel.dataset.nf] = sel.value || null;
+  document.querySelectorAll('#adm-vend-list .adm-vsel').forEach(inp=>{
+    const val = inp.value.trim();
+    overrides[inp.dataset.nf] = val || null;
   });
   localStorage.setItem(VEND_OV_KEY, JSON.stringify(overrides));
   NOTAS.forEach(n=>{ if (overrides[n.nf]!==undefined) n.vendedor = overrides[n.nf]||null; });
   ALL_VENDS = [...new Set(NOTAS.filter(n=>n.vendedor).map(n=>n.vendedor))].sort();
   buildVSelect();
   refresh();
-  g('adm-vend-ok').textContent = '✅ Atribuições salvas!';
-  setTimeout(()=>{ g('adm-vend-ok').textContent=''; g('adm-overlay').classList.remove('open'); }, 1200);
+  // Publish to GitHub if PAT configured
+  const pat = localStorage.getItem('gh_pat');
+  if (pat) {
+    admPublishVendedores(overrides, pat);
+  } else {
+    g('adm-vend-ok').textContent = '✅ Salvo localmente. Configure o Token GitHub na aba Senha para publicar no servidor.';
+    setTimeout(()=>{ g('adm-vend-ok').textContent=''; g('adm-overlay').classList.remove('open'); }, 3000);
+  }
+}
+function admPublishVendedores(overrides, pat) {
+  const REPO = 'petersonoliveira14-debug/pedidos-ProdutosCarbo';
+  const PATH = 'data/vendedores.json';
+  const msg = g('adm-vend-ok');
+  msg.textContent = '⏳ Publicando no servidor...';
+  fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`, {
+    headers: {'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github.v3+json'}
+  })
+  .then(r => r.json())
+  .then(file => {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(overrides, null, 2))));
+    return fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`, {
+      method: 'PUT',
+      headers: {'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json'},
+      body: JSON.stringify({ message: 'chore: atualizar vendedores via Admin', content, sha: file.sha || undefined })
+    });
+  })
+  .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+  .then(() => {
+    SERVER_VEND = overrides;
+    msg.textContent = '✅ Publicado no servidor!';
+    setTimeout(()=>{ msg.textContent=''; g('adm-overlay').classList.remove('open'); }, 2000);
+  })
+  .catch(err => {
+    msg.textContent = `❌ Erro: ${err.message}. Salvo localmente.`;
+    msg.style.color = 'var(--red)';
+    setTimeout(()=>{ msg.style.color=''; }, 5000);
+  });
 }
 function admClearOverrides() {
   if (!confirm('Remover todas as atribuições manuais de vendedores?')) return;
   localStorage.removeItem(VEND_OV_KEY);
-  fetch(g('period-select').value?`data/historico/${g('period-select').value}.json`:'data/pedidos.json')
+  const sel = g('period-select');
+  const ym = sel ? sel.value : '';
+  fetch(ym ? `data/historico/${ym}.json` : 'data/pedidos.json')
     .then(r=>r.json()).then(data=>applyData(data)).catch(()=>applyData(null));
   g('adm-overlay').classList.remove('open');
+}
+function admSavePat() {
+  const pat = g('adm-gh-pat').value.trim();
+  if (!pat) { localStorage.removeItem('gh_pat'); g('adm-pat-ok').textContent='Token removido.'; return; }
+  localStorage.setItem('gh_pat', pat);
+  g('adm-pat-ok').textContent = '✅ Token salvo!';
+  setTimeout(()=>{ g('adm-pat-ok').textContent=''; }, 2000);
 }
 function admChangeSenha() {
   const np = g('adm-new-pass').value;
@@ -1317,7 +1421,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (badge) badge.textContent = (meta.total>0?'⚡ Sync: ':'⏰ Sync: ')+meta.ultima_atualizacao;
   }).catch(()=>{});
 
-  fetch('data/historico/index.json')
+  // Load server vendor overrides first, then historico
+  loadServerVendedores().then(() => fetch('data/historico/index.json'))
     .then(r=>{ if(!r.ok) throw new Error('no-hist'); return r.json(); })
     .then(idx=>{
       HIST_MESES = idx.meses || [];
