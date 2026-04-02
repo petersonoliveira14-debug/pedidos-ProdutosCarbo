@@ -1,0 +1,80 @@
+[
+  {
+    "nf": 16,
+    "data": "29/10",
+    "sem": 4,
+    "cliente": "D & D SERVIÇO DE INSTALAÇÃO, MANUTENÇÃO",
+    "status": "venda",
+    "valor": 1920.0,
+    "produto": "1l",
+    "qtd": 24,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ - ESTABILIZADOR E OTIMIZADOR 1 L x24"
+  },
+  {
+    "nf": 13,
+    "data": "20/10",
+    "sem": 3,
+    "cliente": "M CONSTRUÇÕES & SERVIÇOS LTDA",
+    "status": "venda",
+    "valor": 4480.0,
+    "produto": "100ml",
+    "qtd": 0,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": ""
+  },
+  {
+    "nf": 12,
+    "data": "20/10",
+    "sem": 3,
+    "cliente": "M CONSTRUÇÕES & SERVIÇOS LTDA",
+    "status": "venda",
+    "valor": 2240.0,
+    "produto": "100ml",
+    "qtd": 0,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": ""
+  },
+  {
+    "nf": 11,
+    "data": "17/10",
+    "sem": 3,
+    "cliente": "M CONSTRUÇÕES E SERVIÇOS LTDA",
+    "status": "venda",
+    "valor": 9408.0,
+    "produto": "1l",
+    "qtd": 84,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ ESTABILIZADOR E OTIMIZADOR 1 L - PRODUTO NAO ENQUADRADO NA PORTARIA EM VIGOR S/TRANSPORTE DE PRODUTOS PERIGOSOS x84"
+  },
+  {
+    "nf": 10,
+    "data": "09/10",
+    "sem": 2,
+    "cliente": "THIAGO DE ARAUJO TEIXEIRA",
+    "status": "venda",
+    "valor": 30.0,
+    "produto": "100ml",
+    "qtd": 100,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ - ESTABILIZADOR E OTIMIZADOR DE COMBUSTIVEIS x100"
+  },
+  {
+    "nf": 9,
+    "data": "07/10",
+    "sem": 1,
+    "cliente": "ANTONIO LEANDRO DA COSTA",
+    "status": "venda",
+    "valor": 30.0,
+    "produto": "100ml",
+    "qtd": 100,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ - ESTABILIZADOR E OTIMIZADOR DE COMBUSTIVEIS x100"
+  }
+]

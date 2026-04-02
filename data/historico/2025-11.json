@@ -1,0 +1,54 @@
+[
+  {
+    "nf": 22,
+    "data": "19/11",
+    "sem": 3,
+    "cliente": "J BARBALHO CORRETORA LTDA",
+    "status": "venda",
+    "valor": 60.0,
+    "produto": "100ml",
+    "qtd": 2,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ ESTABILIZADOR E OTIMIZADOR 100ML -PRODUTO NAO ENQUADRADO NA PORTARIA EM VIGOR S/TRANSPORTE DE PRODUTOS PERIGOSOS x2"
+  },
+  {
+    "nf": 21,
+    "data": "06/11",
+    "sem": 1,
+    "cliente": "RESINORTE INDUSTRIA DE POLIMEROS SA",
+    "status": "venda",
+    "valor": 510.0,
+    "produto": "100ml",
+    "qtd": 600,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "FRASCO SP 100/28 CL BRANCO 13G x300; TAMPA 28 MM BRANCO C/ SELO DE INDUCAO x300"
+  },
+  {
+    "nf": 20,
+    "data": "04/11",
+    "sem": 1,
+    "cliente": "TOTAL PARNAMIRIM PNEUS LTDA",
+    "status": "venda",
+    "valor": 1820.0,
+    "produto": "100ml",
+    "qtd": 140,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ ESTABILIZADOR E OTIMIZADOR 100ML -PRODUTO NAO ENQUADRADO NA PORTARIA EM VIGOR S/TRANSPORTE DE PRODUTOS PERIGOSOS x140"
+  },
+  {
+    "nf": 19,
+    "data": "04/11",
+    "sem": 1,
+    "cliente": "AUTO TOTAL COMERCIO LTDA",
+    "status": "venda",
+    "valor": 1820.0,
+    "produto": "100ml",
+    "qtd": 140,
+    "vendedor": null,
+    "marca": "carbozé",
+    "itens_desc": "CARBOZÉ ESTABILIZADOR E OTIMIZADOR 100ML -PRODUTO NAO ENQUADRADO NA PORTARIA EM VIGOR S/TRANSPORTE DE PRODUTOS PERIGOSOS x140"
+  }
+]
